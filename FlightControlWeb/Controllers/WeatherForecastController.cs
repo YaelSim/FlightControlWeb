@@ -35,5 +35,14 @@ namespace FlightControlWeb.Controllers
             })
             .ToArray();
         }
+
+        [HttpGet("hello")]
+        public WeatherForecast Hello()
+        {
+            return new WeatherForecast
+            {
+                Date = DateTime.Now, TemperatureC = -1, Summary = "Yoni :)"
+            };
+        }
     }
 }
