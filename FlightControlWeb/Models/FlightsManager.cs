@@ -10,13 +10,33 @@ namespace FlightControlWeb.Models
     public class FlightsManager
     {
         private readonly List<Flight> flightsList = new List<Flight>();
+        
+        //Return internal AND external flights according to a given <DATE_TIME>
         public IEnumerable<Flight> GetAllFlights()
         {
             return flightsList;
         }
+
+        //Return internal flights only according to a given <DATE_TIME>
+        public IEnumerable<Flight> GetAllInternalFlights()
+        {
+            List<Flight> internalFlightsList = new List<Flight>();
+            foreach (var flight in flightsList)
+            {
+                if (!flight.IsExternal)
+                {
+                    internalFlightsList.Add(flight);
+                }
+            }
+            return internalFlightsList;
+        }
         public void AddFlight(Flight flight)
         {
-            flightsList.Add(flight);
+            Flight toAdd = flight;
+            DateTime result = DateTime.ParseExact(flight.DateTime, "yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture);
+            result = TimeZoneInfo.ConvertTimeToUtc(result);
+            toAdd.InternalDateTime = result;
+            flightsList.Add(toAdd);
         }
         public void DeleteFlight(string flightId)
         {
@@ -52,14 +72,20 @@ namespace FlightControlWeb.Models
             oldFlight.Latitude = flight.Latitude;
             oldFlight.Longitude = flight.Longitude;
             oldFlight.Passengers = flight.Passengers;
-            //oldFlight.InternalDateTime = ..... Create DataTime Object. Link:
-            //https://stackoverflow.com/questions/11551185/converting-a-string-to-datetime-from-yyyy-mm-dd
+            
+            //Convert the given string to an DateTime object
             DateTime result = DateTime.ParseExact(flight.DateTime, "yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture);
+            result = TimeZoneInfo.ConvertTimeToUtc(result);
+            oldFlight.InternalDateTime = result;
         }
         public void VerifyAllFlightsAreActive()
         {
             // TODO *********************************
             // If the flight isn't active anymore - remove it
+            foreach (var flight in flightsList)
+            {
+
+            }
         }
     }
 }

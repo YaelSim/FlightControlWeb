@@ -42,6 +42,7 @@ namespace FlightControlWeb.Controllers
         {
             string example = "2020-12-26T23:56:21Z";
             DateTime res = DateTime.ParseExact(example, "yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture);
+            res = TimeZoneInfo.ConvertTimeToUtc(res);
             return new WeatherForecast
             {
                 Date = DateTime.Now, TemperatureC = -1, Summary = "Yoni :)"
