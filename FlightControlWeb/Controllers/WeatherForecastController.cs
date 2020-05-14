@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -39,6 +40,8 @@ namespace FlightControlWeb.Controllers
         [HttpGet("hello")]
         public WeatherForecast Hello()
         {
+            string example = "2020-12-26T23:56:21Z";
+            DateTime res = DateTime.ParseExact(example, "yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture);
             return new WeatherForecast
             {
                 Date = DateTime.Now, TemperatureC = -1, Summary = "Yoni :)"
