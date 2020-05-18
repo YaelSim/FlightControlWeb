@@ -33,9 +33,9 @@ namespace FlightControlWeb.Models
         public void AddFlight(Flight flight)
         {
             Flight toAdd = flight;
-            DateTime result = DateTime.ParseExact(flight.DateTime, "yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture);
-            result = TimeZoneInfo.ConvertTimeToUtc(result);
-            toAdd.InternalDateTime = result;
+            //DateTime result = DateTime.ParseExact(flight.DateTime, "yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture);
+            //result = TimeZoneInfo.ConvertTimeToUtc(result);
+           // toAdd.InternalDateTime = result;
             flightsList.Add(toAdd);
         }
         public void DeleteFlight(string flightId)
@@ -77,15 +77,6 @@ namespace FlightControlWeb.Models
             DateTime result = DateTime.ParseExact(flight.DateTime, "yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture);
             result = TimeZoneInfo.ConvertTimeToUtc(result);
             oldFlight.InternalDateTime = result;
-        }
-        public void VerifyAllFlightsAreActive()
-        {
-            // TODO *********************************
-            // If the flight isn't active anymore - remove it
-            foreach (var flight in flightsList)
-            {
-
-            }
         }
     }
 }

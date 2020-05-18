@@ -1,3 +1,4 @@
+using FlightControlWeb.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
@@ -27,6 +28,13 @@ namespace FlightControlWeb
             {
                 configuration.RootPath = "ClientApp/build";
             });
+
+            services.Add(new ServiceDescriptor(typeof(FlightPlanManager),
+                new FlightPlanManager())); // As singleton
+            services.Add(new ServiceDescriptor(typeof(FlightsManager),
+                typeof(FlightsManager), ServiceLifetime.Transient));
+            services.Add(new ServiceDescriptor(typeof(ServersMamager),
+                typeof(ServersMamager), ServiceLifetime.Transient));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

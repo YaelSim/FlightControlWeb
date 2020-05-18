@@ -9,6 +9,6 @@ namespace FlightControlWeb.Models
     {
         public double Longitude { get; set; }
         public double Latitude { get; set; }
-        public double Data_time { get; set; }
+        public DateTime DateTime { get; set; }
     }
 }
