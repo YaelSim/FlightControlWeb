@@ -31,8 +31,8 @@ namespace FlightControlWeb
 
             services.Add(new ServiceDescriptor(typeof(FlightPlanManager),
                 new FlightPlanManager())); // As singleton
-            services.Add(new ServiceDescriptor(typeof(FlightsManager),
-                typeof(FlightsManager), ServiceLifetime.Transient));
+            //services.Add(new ServiceDescriptor(typeof(FlightsManager),
+                //typeof(FlightsManager), ServiceLifetime.Transient)); // Should we remove it?
             services.Add(new ServiceDescriptor(typeof(ServersMamager),
                 typeof(ServersMamager), ServiceLifetime.Transient));
         }

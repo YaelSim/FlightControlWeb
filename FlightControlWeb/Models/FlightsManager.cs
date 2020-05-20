@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace FlightControlWeb.Models
 {
-    public class FlightsManager
+    /*public class FlightsManager
     {
         private readonly List<Flight> flightsList = new List<Flight>();
         
@@ -78,5 +78,5 @@ namespace FlightControlWeb.Models
             result = TimeZoneInfo.ConvertTimeToUtc(result);
             oldFlight.InternalDateTime = result;
         }
-    }
+    }*/
 }
