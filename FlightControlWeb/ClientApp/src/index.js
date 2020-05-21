@@ -11,7 +11,7 @@ const rootElement = document.getElementById('root');
 
 ReactDOM.render(
     //<BrowserRouter basename={baseUrl}>
-        <FlightList />,
+        <App />,
   //</BrowserRouter>,
   rootElement);
 

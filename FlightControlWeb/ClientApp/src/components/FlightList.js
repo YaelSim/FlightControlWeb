@@ -1,49 +1,58 @@
-﻿import React, { useState, useEffect } from "react";
-export default function FlightDetails(props) {
-    const [flights, setFlights] = useState([
-        {
-            flight_id: "1",
-            longitude: "1",
-            latitue: "1",
-            passengers: "1",
-            company_name: "1",
-            date_time: "1",
-            is_external: false
-        },
-        {
-            flight_id: "2",
-            longitude: "2",
-            latitue: "2",
-            passengers: "2",
-            company_name: "2",
-            date_time: "2",
-            is_external: true
-        },
-        {
-            flight_id: "3",
-            longitude: "1",
-            latitue: "1",
-            passengers: "1",
-            company_name: "1",
-            date_time: "1",
-            is_external: false
-        }
-    ]);
+﻿import React, { useState, useEffect, useContext } from "react";
+import FlightIdContext from "../contexts/FlightIdContext.js";
 
-    const deleteRow = flight_id => {
-        const copyFlights = [...flights];
-        const index = copyFlights.findIndex(
-            flight => flight.flight_id == flight_id
-        );
-        if (index != -1) {
-            copyFlights.splice(index, 1);
-            setFlights(copyFlights);
+export default function FlightList() {
+    const { flightId, setFlightId } = useContext(FlightIdContext);
+    const [flights, setFlights] = useState([]);
+    const [selectedFlight, setSelectedFlight]= useState("");
+
+    async function getFlights() {
+        const r = await fetch('/api/Flights');
+        return await r.json();
+    }
+
+    useEffect(() => {
+        getFlights().then(flights => setFlights(flights));
+    }, []);
+
+    async function deleteFlight(flightId) {
+        try {
+            const response = await fetch(`/api/Flights/${flightId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            });
+            return response.json(); // parses JSON response into native JavaScript objects
+        } catch (error) {
+            console.error(error);
         }
+    }
+
+    const deleteRow = (flight_id, e) => {
+        e.stopPropagation();
+        
+            setFlightId(null);
+            deleteFlight(flight_id);
+            const copyFlights = [...flights];
+            const index = copyFlights.findIndex(
+                flight => flight.flight_id === flight_id
+            );
+            if (index !== -1) {
+                copyFlights.splice(index, 1);
+                setFlights(copyFlights);
+            }
+        
+    };
+
+    const clickHandler = flightId => {
+        setSelectedFlight(flightId);
+        setFlightId(flightId);
     };
 
     return (
         <table className="table table-hover">
-            <thead className="thead-light">
+            <thead className="thead">
                 <tr>
                     <th scope="col">Flight ID</th>
                     <th scope="col">Company</th>
@@ -55,14 +64,16 @@ export default function FlightDetails(props) {
                 {flights
                     .filter(flight => !flight.is_external)
                     .map(flight => (
-                        <tr>
+                        <tr onClick={() => clickHandler(flight.flight_id)}
+                        className={`${flight.flight_id === selectedFlight ? 'table-info' : ''}`}
+                        >
                             <th scope="row">{flight.flight_id}</th>
                             <td>{flight.company_name}</td>
                             <td>No</td>
                             <td>
                                 <svg
                                     className="bi bi-trash"
-                                    onClick={() => deleteRow(flight.flight_id)}
+                                    onClick={e => deleteRow(flight.flight_id, e)}
                                     width="1em"
                                     height="1em"
                                     viewBox="0 0 16 16"
@@ -82,7 +93,7 @@ export default function FlightDetails(props) {
                 {flights
                     .filter(flight => flight.is_external)
                     .map(flight => (
-                        <tr>
+                        <tr onClick={() => clickHandler(flight.flight_id)}>
                             <th scope="row">{flight.flight_id}</th>
                             <td>{flight.company_name}</td>
                             <td>Yes</td>
