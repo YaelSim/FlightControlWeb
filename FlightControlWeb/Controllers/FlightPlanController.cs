@@ -12,10 +12,11 @@ namespace FlightControlWeb.Controllers
     [ApiController]
     public class FlightPlanController : ControllerBase
     {
-        private readonly FlightPlanManager service;
-        public FlightPlanController(FlightPlanManager flightPlanManager)
+        private readonly IFlightPlanManager service;
+        public FlightPlanController(IFlightPlanManager flightPlanManager)
         {
             this.service = flightPlanManager;
+            this.AddFlightPlan(new FlightPlan { CompanyName = "1", InitialLocation = new InitialLocation { Longitude = 1, Latitude = 1, DateTime = new DateTime() }, Segments = null });
         }
         
         //POST: /api/FlightPlan

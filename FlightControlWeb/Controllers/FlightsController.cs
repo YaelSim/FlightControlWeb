@@ -22,7 +22,7 @@ namespace FlightControlWeb.Controllers
         // GET: /api/Flights?relative_to=<DATE_TIME>&sync_all   V   GET: /api/Flights?relative_to=<DATE_TIME>
         [HttpGet]
         public async Task<IEnumerable<Flight>> GetFlights(
-            [FromQueryAttribute(Name= "relative_to")] string dateTime)
+            [FromQuery(Name = "relative_to")] string dateTime)
         {
             string request = Request.QueryString.Value;
             DateTime result = GetDateTimeAccordingfToStr(dateTime);

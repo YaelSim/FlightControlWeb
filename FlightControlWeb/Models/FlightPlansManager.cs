@@ -108,8 +108,17 @@ namespace FlightControlWeb.Models
         }
         private string GenerateHashCodeOfId(FlightPlan flightPlan)
         {
-            // get the first 2 chars from the company name
-            string firstName = (flightPlan.CompanyName).Substring(0, 2);
+            string firstName;
+            //If the given flightplan's parameters are too short to generate
+            if (flightPlan.CompanyName.Length < 2)
+            {
+                firstName = flightPlan.CompanyName;
+            } else
+            {
+                // get the first 2 chars from the company name
+                firstName = (flightPlan.CompanyName).Substring(0, 2);
+            }
+            
             // id - first 2 char and 6 random numbers
             string Id = firstName + GetRandomNumbers();
             return Id;
