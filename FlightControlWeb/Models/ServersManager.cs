@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FlightControlWeb.Models
 {
-    public class ServersMamager
+    public class ServersMamager : IServerManager
     {
         private readonly List<Server> serversList = new List<Server>();
 

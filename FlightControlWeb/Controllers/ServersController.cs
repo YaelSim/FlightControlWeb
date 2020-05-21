@@ -12,7 +12,7 @@ namespace FlightControlWeb.Controllers
     [ApiController]
     public class ServersController : ControllerBase
     {
-        private ServersMamager service = new ServersMamager();
+        private readonly ServersMamager service = new ServersMamager();
 
         //GET: /api/servers
         [HttpGet]
@@ -23,17 +23,17 @@ namespace FlightControlWeb.Controllers
 
         //POST: /api/servers
         [HttpPost]
-        public Server AddServer(Server s)
+        public Server AddServer([FromBody] Server s)
         {
             service.AddServer(s);
             return s;
         }
 
         //DELETE: /api/servers/{id}
-        [HttpDelete]
-        public void RemoveServer(string serverId)
+        [HttpDelete("{id}")]
+        public void RemoveServer(string id)
         {
-            service.RemoveServer(serverId);
+            service.RemoveServer(id);
         }
     }
 }

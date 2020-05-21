@@ -2,43 +2,53 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace FlightControlWeb.Models
 {
-    public class FlightPlanManager
+    public class FlightPlanManager : IFlightPlanManager
     {
-        //private readonly List<FlightPlan> flightsPlansList = new List<FlightPlan>(); * old
-        readonly Dictionary<string, KeyValuePair<bool, FlightPlan>> flightPlans =
+        private readonly Dictionary<string, KeyValuePair<bool, FlightPlan>> flightPlans =
             new Dictionary<string, KeyValuePair<bool, FlightPlan>>();
-
-        public IEnumerable<Flight> GetAllFlightsRelative(DateTime dateTime)
+        private readonly IServerManager serverManager;
+        public FlightPlanManager(IServerManager sm)
         {
-            List<Flight> flights = new List<Flight>();
-            foreach (KeyValuePair<string, KeyValuePair<bool, FlightPlan>> flightPlanKeyValuePair
-                in this.flightPlans)
+            serverManager = sm;
+        }
+        public async Task<IEnumerable<Flight>> GetAllFlightsRelative(DateTime dateTime)
+        {
+            //HERE the previous code was......
+            IEnumerable<Flight> flightsTotal = GetInternalFlightsRelative(dateTime);
+            string restOfUrl = "/api/Flights?relative_to=";
+            //For each server on the ServerManager
+            foreach (Server currServer in serverManager.GetAllServers())
             {
-                FlightPlan flightPlan = flightPlanKeyValuePair.Value.Value;
-                string flightId = flightPlanKeyValuePair.Key;
-                bool isExternal = flightPlanKeyValuePair.Value.Key;
-
-                //add only if the flight is active
-                if (IsFlightActive(flightPlan, dateTime))
+                IEnumerable<Flight> flightsList = null;
+                HttpClient httpClient = new HttpClient();
+                try
                 {
-                    flights.Add(new Flight
-                    {
-                        FlightId = flightId,
-                        Longitude = flightPlan.InitialLocation.Longitude,
-                        Latitude = flightPlan.InitialLocation.Latitude,
-                        Passengers = flightPlan.Passengers,
-                        CompanyName = flightPlan.CompanyName,
-                        DateTime = flightPlan.InitialLocation.DateTime,
-                        IsExternal = isExternal
-                    });
-                }
-            }
+                    HttpResponseMessage returned = await httpClient.GetAsync(currServer.ServerUrl 
+                        + restOfUrl + dateTime.ToString("yyyy-MM-ddTHH:mm:ssZ"));
 
-            return flights;
+                    //Make sure that the returned response was successful
+                    returned.EnsureSuccessStatusCode();
+                    string bodyOfReturned = await returned.Content.ReadAsStringAsync();
+                    Debug.WriteLine(bodyOfReturned); //DELETE AFTERWARDS *************
+                    flightsList = Newtonsoft.Json.JsonConvert.DeserializeObject<IEnumerable<Flight>>(bodyOfReturned);
+                } catch (Exception e)
+                {
+                    Debug.WriteLine("\nException Caught...\n {0}", e.Message);
+                }
+
+                //Dispose the HttpClient to prevent a leak
+                httpClient.Dispose();
+
+                //Combine the flightsList to flightsTotal. DO WE NEED TO PROVIDE A COMPARATOR? NOT SURE. *************
+                flightsTotal.Union(flightsList);
+            }
+            
+            return flightsTotal;
         }
         public IEnumerable<Flight> GetInternalFlightsRelative(DateTime dateTime)
         {
@@ -77,11 +87,9 @@ namespace FlightControlWeb.Models
             bool isExternal = false;
             flightPlans.Add(uniqueId, new KeyValuePair<bool, FlightPlan>(isExternal, flightPlan));
         }
-
         public FlightPlan GetFlightPlanById(string uniqueId)
         {
-            KeyValuePair<bool, FlightPlan> output;
-            bool gotValue = flightPlans.TryGetValue(uniqueId, out output);
+            bool gotValue = flightPlans.TryGetValue(uniqueId, out KeyValuePair<bool, FlightPlan> output);
 
             if (gotValue)
             {
@@ -94,22 +102,19 @@ namespace FlightControlWeb.Models
                 return null;
             }
         }
-
         public void RemoveFlightPlan(string uniqueId)
         {
             this.flightPlans.Remove(uniqueId);
         }
-
         private string GenerateHashCodeOfId(FlightPlan flightPlan)
         {
             // get the first 2 chars from the company name
             string firstName = (flightPlan.CompanyName).Substring(0, 2);
             // id - first 2 char and 6 random numbers
-            string Id = firstName + getRandomNumbers();
+            string Id = firstName + GetRandomNumbers();
             return Id;
         }
-
-        private string getRandomNumbers()
+        private string GetRandomNumbers()
         {
             Random rand = new Random();
             string id = (rand.Next()).ToString();
@@ -120,7 +125,6 @@ namespace FlightControlWeb.Models
             }
             return id;
         }
-
         private bool IsFlightActive(FlightPlan flightPlan, DateTime dateTime)
         {
             dateTime = dateTime.ToUniversalTime();
@@ -142,7 +146,6 @@ namespace FlightControlWeb.Models
             }
             return true;
         }
-
         private double GetTotalTimeOfFlight(List<Segment> segmentList)
         {
             double totalTime = 0;

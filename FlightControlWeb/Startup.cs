@@ -29,12 +29,8 @@ namespace FlightControlWeb
                 configuration.RootPath = "ClientApp/build";
             });
 
-            services.Add(new ServiceDescriptor(typeof(FlightPlanManager),
-                new FlightPlanManager())); // As singleton
-            //services.Add(new ServiceDescriptor(typeof(FlightsManager),
-                //typeof(FlightsManager), ServiceLifetime.Transient)); // Should we remove it?
-            services.Add(new ServiceDescriptor(typeof(ServersMamager),
-                typeof(ServersMamager), ServiceLifetime.Transient));
+            services.AddSingleton<IFlightPlanManager, FlightPlanManager>();
+            services.AddSingleton<IServerManager, ServersMamager>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -12,17 +12,22 @@ namespace FlightControlWeb.Controllers
     [ApiController]
     public class FlightPlanController : ControllerBase
     {
-        private FlightPlanManager service = new FlightPlanManager();
+        private readonly FlightPlanManager service;
+        public FlightPlanController(FlightPlanManager flightPlanManager)
+        {
+            this.service = flightPlanManager;
+        }
         
         //POST: /api/FlightPlan
         [HttpPost]
-        public FlightPlan AddFlightPlan(FlightPlan fp)
+        public FlightPlan AddFlightPlan([FromBody] FlightPlan fp)
         {
             service.AddFlightPlan(fp);
             return fp;
         }
+
         //GET: /api/FlightPlan/{id}
-        [HttpGet]
+        [HttpGet("{id}")]
         public FlightPlan GetFlightPlanByUniqueId(string uniqueId)
         {
             return service.GetFlightPlanById(uniqueId);

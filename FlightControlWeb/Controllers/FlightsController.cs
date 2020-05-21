@@ -13,36 +13,33 @@ namespace FlightControlWeb.Controllers
     [ApiController]
     public class FlightsController : ControllerBase
     {
-        private FlightPlanManager service;
-
-        // GET: /api/Flights?relative_to=<DATE_TIME>
-        [HttpGet]
-        public IEnumerable<Flight> GetInternalFlights()
+        private IFlightPlanManager service;
+        public FlightsController(IFlightPlanManager flightPlanManager)
         {
-            // initialize the service
-            GetService();
-            string dateTime = Request.QueryString.Value;
-            DateTime result = GetDateTimeAccordingfToStr(dateTime);
-            return service.GetInternalFlightsRelative(result);
+            this.service = flightPlanManager;
         }
 
-        // GET: /api/Flights?relative_to=<DATE_TIME>&sync_all
+        // GET: /api/Flights?relative_to=<DATE_TIME>&sync_all   V   GET: /api/Flights?relative_to=<DATE_TIME>
         [HttpGet]
-        public IEnumerable<Flight> GetAllFlights()
+        public async Task<IEnumerable<Flight>> GetFlights(
+            [FromQueryAttribute(Name= "relative_to")] string dateTime)
         {
-            // initialize the service
-            GetService();
-            string dateTime = Request.QueryString.Value;
+            string request = Request.QueryString.Value;
             DateTime result = GetDateTimeAccordingfToStr(dateTime);
-            return service.GetAllFlightsRelative(result);
+            bool externalFlightsNeeded = request.Contains("sync_all");
+            if (externalFlightsNeeded)
+            {
+                return await service.GetAllFlightsRelative(result);
+            } else
+            {
+                return service.GetInternalFlightsRelative(result);
+            }
         }
 
         // DELETE: /api/Flights/{id}
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public void DeleteFlightPlan(string id)
         {
-            // initialize the service
-            GetService();
             service.RemoveFlightPlan(id);
         }
 
@@ -52,12 +49,6 @@ namespace FlightControlWeb.Controllers
                CultureInfo.InvariantCulture);
             result = TimeZoneInfo.ConvertTimeToUtc(result);
             return result;
-        }
-
-        private void GetService()
-        {
-            var allServices = this.HttpContext.RequestServices;
-            this.service = (FlightPlanManager)allServices.GetService(typeof(FlightPlanManager));
         }
     }
 }
