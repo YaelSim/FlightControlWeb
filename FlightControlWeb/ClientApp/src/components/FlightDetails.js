@@ -1,8 +1,7 @@
 ﻿import React, { useEffect, useState, useContext } from "react";
 import FlightIdContext from "../contexts/FlightIdContext.js"
 
-export default function FlightDetails() {
-    const { flightId } = useContext(FlightIdContext);
+export default function FlightDetails(props) {
 
     const [flightPlan, setFlightPlan] = useState({});
     const [loading, setLoading] = useState(false);
@@ -13,14 +12,14 @@ export default function FlightDetails() {
     }
 
     useEffect(() => {
-        if (flightId) {
+        if (props.flightId) {
             setLoading(true);
-            getFlightPlan(flightId).then(flightPlan => {
+            getFlightPlan(props.flightId).then(flightPlan => {
                 setFlightPlan(flightPlan);
                 setLoading(false);
             });
         }
-    }, [flightId]);
+    }, [props.flightId]);
 
     if (loading) {
         return (
@@ -35,9 +34,9 @@ export default function FlightDetails() {
       <div class="row mt-2">
 
         <div class="col-3">Company Name: </div>
-        <div class="col-3">{flightId ? flightPlan.company_name : "-"}</div>
+        <div class="col-3">{props.flightId ? flightPlan.company_name : "-"}</div>
         <div class="col-3">Number Of Passengers: </div>
-        <div class="col-3">{flightId ? flightPlan.passengers : "-"}</div>
+        <div class="col-3">{props.flightId ? flightPlan.passengers : "-"}</div>
       </div>
       <div class="row mt-3">
         <div class="col-3">Destionation: </div>

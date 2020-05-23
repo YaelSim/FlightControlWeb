@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import FlightList from "./components/FlightList.js";
 import FlightDetails from "./components/FlightDetails";
 import FlightIdContext from "./contexts/FlightIdContext.js";
@@ -7,15 +7,25 @@ import FlightsMap from "./components/FlightsMap.js";
 
 export default function App(props) {
     const [flightId, setFlightId] = useState(null);
+    const [flights, setFlights] = useState([]);
+
+    async function getFlights() {
+        const r = await fetch('/api/Flights');
+        return await r.json();
+    }
+
+    useEffect(() => {
+        getFlights().then(flights => setFlights(flights));
+    }, []);
+
     return (
-        <FlightIdContext.Provider value={{ flightId, setFlightId }}>
             <div className="container-fluid">
                 <div className="row">
                     <div className="col-md-8 p-0">
                         <div className="row">
                             <div className="col-md-12">
                                 <div style={{ height: "70vh" }}>
-                                <FlightsMap/>
+                                <FlightsMap flights={flights} setFlights={setFlights} flightId={flightId} setFlightId={setFlightId}/>
                                 </div>
                             </div>
                         </div>
@@ -23,17 +33,16 @@ export default function App(props) {
                             <div className="col-md-12">
                                 <div className="card" style={{ height: "30vh"}}>
                                     <div className="card-body">
-                                        <FlightDetails />
+                                        <FlightDetails flightId={flightId} setFlightId={setFlightId}/>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div className="col-md-4 p-0" style={{ height: "100vh", overflow: "auto" }}>
-                        <FlightList />
+                        <FlightList flights={flights} setFlights={setFlights} flightId={flightId} setFlightId={setFlightId}/>
                     </div>
                 </div>
             </div>
-        </FlightIdContext.Provider>
     );
 }

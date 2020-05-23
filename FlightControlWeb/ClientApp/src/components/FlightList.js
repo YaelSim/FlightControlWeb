@@ -1,19 +1,7 @@
 ﻿import React, { useState, useEffect, useContext } from "react";
 import FlightIdContext from "../contexts/FlightIdContext.js";
 
-export default function FlightList() {
-    const { setFlightId } = useContext(FlightIdContext);
-    const [flights, setFlights] = useState([]);
-    const [selectedFlight, setSelectedFlight]= useState("");
-
-    async function getFlights() {
-        const r = await fetch('/api/Flights');
-        return await r.json();
-    }
-
-    useEffect(() => {
-        getFlights().then(flights => setFlights(flights));
-    }, []);
+export default function FlightList(props) {
 
     async function deleteFlight(flightId) {
         try {
@@ -31,23 +19,22 @@ export default function FlightList() {
 
     const deleteRow = (flight_id, e) => {
         e.stopPropagation();
-        
-            setFlightId(null);
-            deleteFlight(flight_id);
-            const copyFlights = [...flights];
-            const index = copyFlights.findIndex(
-                flight => flight.flight_id === flight_id
-            );
-            if (index !== -1) {
-                copyFlights.splice(index, 1);
-                setFlights(copyFlights);
-            }
-        
+
+        props.setFlightId(null);
+        deleteFlight(flight_id);
+        const copyFlights = [...props.flights];
+        const index = copyFlights.findIndex(
+            flight => flight.flight_id === flight_id
+        );
+        if (index !== -1) {
+            copyFlights.splice(index, 1);
+            props.setFlights(copyFlights);
+        }
+
     };
 
     const clickHandler = flightId => {
-        setSelectedFlight(flightId);
-        setFlightId(flightId);
+        props.setFlightId(flightId);
     };
 
     return (
@@ -61,11 +48,11 @@ export default function FlightList() {
                 </tr>
             </thead>
             <tbody>
-                {flights
+                {props.flights
                     .filter(flight => !flight.is_external)
                     .map(flight => (
                         <tr onClick={() => clickHandler(flight.flight_id)}
-                        className={`${flight.flight_id === selectedFlight ? 'table-info' : ''}`}
+                            className={`${flight.flight_id === props.flightId ? 'table-info' : ''}`}
                         >
                             <th scope="row">{flight.flight_id}</th>
                             <td>{flight.company_name}</td>
@@ -90,7 +77,7 @@ export default function FlightList() {
                             </td>
                         </tr>
                     ))}
-                {flights
+                {props.flights
                     .filter(flight => flight.is_external)
                     .map(flight => (
                         <tr onClick={() => clickHandler(flight.flight_id)}>
