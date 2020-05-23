@@ -2,7 +2,7 @@
 import FlightIdContext from "../contexts/FlightIdContext.js";
 
 export default function FlightList() {
-    const { flightId, setFlightId } = useContext(FlightIdContext);
+    const { setFlightId } = useContext(FlightIdContext);
     const [flights, setFlights] = useState([]);
     const [selectedFlight, setSelectedFlight]= useState("");
 

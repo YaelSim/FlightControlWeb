@@ -1,4 +1,4 @@
-import React, { Component, useState } from "react";
+import React, { useState } from "react";
 import FlightList from "./components/FlightList.js";
 import FlightDetails from "./components/FlightDetails";
 import FlightIdContext from "./contexts/FlightIdContext.js";
@@ -29,7 +29,7 @@ export default function App(props) {
                         </div>
                         <div className="row">
                             <div className="col-md-12">
-                                <div className="card" style={{ height: "30vh" }}>
+                                <div className="card" style={{ height: "30vh"}}>
                                     <div className="card-body">
                                         <FlightDetails />
                                     </div>

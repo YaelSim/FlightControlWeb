@@ -22,10 +22,6 @@ export default function FlightDetails() {
         }
     }, [flightId]);
 
-    if (!flightId) {
-        return '-';
-    }
-
     if (loading) {
         return (
             <div class="spinner-border" role="status">
@@ -36,20 +32,20 @@ export default function FlightDetails() {
 
     return (
         <div class="container">
-      <div class="row">
+      <div class="row mt-2">
 
         <div class="col-3">Company Name: </div>
-        <div class="col-3">{flightPlan.company_name}</div>
+        <div class="col-3">{flightId ? flightPlan.company_name : "-"}</div>
         <div class="col-3">Number Of Passengers: </div>
-        <div class="col-3">{flightPlan.passengers}</div>
+        <div class="col-3">{flightId ? flightPlan.passengers : "-"}</div>
       </div>
-      <div class="row">
+      <div class="row mt-3">
         <div class="col-3">Destionation: </div>
         <div class="col-3">-</div>
         <div class="col-3">Arrival Time: </div>
         <div class="col-3">-</div>
       </div>
-      <div class="row">
+      <div class="row mt-3">
         <div class="col-3">Origin: </div>
         <div class="col-3">-</div>
         <div class="col-3">Departure Time: </div>
