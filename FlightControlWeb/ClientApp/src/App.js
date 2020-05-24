@@ -3,6 +3,7 @@ import FlightList from "./components/FlightList.js";
 import FlightDetails from "./components/FlightDetails";
 import FlightIdContext from "./contexts/FlightIdContext.js";
 import FlightsMap from "./components/FlightsMap.js";
+import DragAndDrop from "./components/DragAndDrop.js"
 //import './custom.css'
 
 export default function App(props) {
@@ -17,6 +18,10 @@ export default function App(props) {
     useEffect(() => {
         getFlights().then(flights => setFlights(flights));
     }, []);
+
+    const dragHandler = () => {
+        console.log("drag");
+    };
 
     return (
             <div className="container-fluid">
@@ -39,8 +44,9 @@ export default function App(props) {
                             </div>
                         </div>
                     </div>
-                    <div className="col-md-4 p-0" style={{ height: "100vh", overflow: "auto" }}>
-                        <FlightList flights={flights} setFlights={setFlights} flightId={flightId} setFlightId={setFlightId}/>
+                    <div className="col-md-4 p-0" style={{ height: "100vh", overflow: "auto" } } >
+                      
+                         <FlightList flights={flights} setFlights={setFlights} flightId={flightId} setFlightId={setFlightId} onItemDropped={dragHandler}/>
                     </div>
                 </div>
             </div>
