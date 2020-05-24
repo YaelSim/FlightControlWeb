@@ -10,6 +10,6 @@ namespace FlightControlWeb.Models
         public IEnumerable<Server> GetAllServers();
         public void AddServer(Server server);
         public Server GetServerById(string id);
-        public void RemoveServer(string id);
+        public Server RemoveServer(string id);
     }
 }

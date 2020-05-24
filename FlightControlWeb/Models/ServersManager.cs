@@ -34,16 +34,18 @@ namespace FlightControlWeb.Models
             }
         }
 
-        public void RemoveServer(string id)
+        public Server RemoveServer(string id)
         {
             Server server = serversList.Where(x => x.ServerId == id).FirstOrDefault();
             if (server == null)
             {
                 Debug.WriteLine("server isn't found.\n");
+                return null;
             }
             else
             {
                 serversList.Remove(server);
+                return server;
             }
         }
     }

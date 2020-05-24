@@ -38,9 +38,17 @@ namespace FlightControlWeb.Controllers
 
         // DELETE: /api/Flights/{id}
         [HttpDelete("{id}")]
-        public void DeleteFlightPlan(string id)
+        public ActionResult<FlightPlan> DeleteFlightPlan(string id)
         {
-            service.RemoveFlightPlan(id);
+            FlightPlan found = service.RemoveFlightPlan(id);
+            if (found == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                return found;
+            }
         }
 
         private DateTime GetDateTimeAccordingfToStr(string dateTime)

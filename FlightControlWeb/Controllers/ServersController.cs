@@ -31,9 +31,16 @@ namespace FlightControlWeb.Controllers
 
         //DELETE: /api/servers/{id}
         [HttpDelete("{id}")]
-        public void RemoveServer(string id)
+        public ActionResult<Server> RemoveServer(string id)
         {
-            service.RemoveServer(id);
+            Server found = service.RemoveServer(id);
+            if (found == null)
+            {
+                return NotFound();
+            } else
+            {
+                return found;
+            }
         }
     }
 }

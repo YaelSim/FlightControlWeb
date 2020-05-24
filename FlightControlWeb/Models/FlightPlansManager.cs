@@ -102,9 +102,15 @@ namespace FlightControlWeb.Models
                 return null;
             }
         }
-        public void RemoveFlightPlan(string uniqueId)
+        public FlightPlan RemoveFlightPlan(string uniqueId)
         {
-            this.flightPlans.Remove(uniqueId);
+            FlightPlan found = GetFlightPlanById(uniqueId);
+            if (found == null)
+            {
+                return null;
+            }
+            flightPlans.Remove(uniqueId);
+            return found;
         }
         private string GenerateHashCodeOfId(FlightPlan flightPlan)
         {

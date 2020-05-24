@@ -11,6 +11,6 @@ namespace FlightControlWeb.Models
         public IEnumerable<Flight> GetInternalFlightsRelative(DateTime dateTime);
         public void AddFlightPlan(FlightPlan flightPlan);
         public FlightPlan GetFlightPlanById(string uniqueId);
-        public void RemoveFlightPlan(string uniqueId);
+        public FlightPlan RemoveFlightPlan(string uniqueId);
     }
 }
