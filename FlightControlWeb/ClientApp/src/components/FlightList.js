@@ -19,8 +19,9 @@ export default function FlightList(props) {
 
     const deleteRow = (flight_id, e) => {
         e.stopPropagation();
-
-        props.setFlightId(null);
+        if (flight_id === props.flightId) {
+            props.setFlightId(null);
+        }
         deleteFlight(flight_id);
         const copyFlights = [...props.flights];
         const index = copyFlights.findIndex(
