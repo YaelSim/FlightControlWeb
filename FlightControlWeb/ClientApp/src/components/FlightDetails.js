@@ -1,5 +1,6 @@
 ﻿import React, { useEffect, useState, useContext } from "react";
 import FlightIdContext from "../contexts/FlightIdContext.js"
+import styles from './FlightDetails.module.css';
 
 export default function FlightDetails(props) {
 
@@ -23,35 +24,37 @@ export default function FlightDetails(props) {
 
     if (loading) {
         return (
-            <div class="spinner-border" role="status">
-                <span class="sr-only">Loading...</span>
+            <div className={styles['loader-container']}>
+                <div className="spinner-border" role="status">
+                    <span className="sr-only">Loading...</span>
+                </div>
             </div>
         );
     }
 
     return (
         <div class="container">
-      <div class="row mt-2">
+            <div class="row mt-2">
 
-        <div class="col-3">Company Name: </div>
-        <div class="col-3">{props.flightId ? flightPlan.company_name : "-"}</div>
-        <div class="col-3">Number Of Passengers: </div>
-        <div class="col-3">{props.flightId ? flightPlan.passengers : "-"}</div>
-      </div>
-      <div class="row mt-3">
-        <div class="col-3">Destionation: </div>
-        <div class="col-3">-</div>
-        <div class="col-3">Arrival Time: </div>
-        <div class="col-3">-</div>
-      </div>
-      <div class="row mt-3">
-        <div class="col-3">Origin: </div>
-        <div class="col-3">-</div>
-        <div class="col-3">Departure Time: </div>
-        <div class="col-3">-</div>
-      </div>
-    </div>
+                <div class="col-3">Company Name: </div>
+                <div class="col-3">{props.flightId ? flightPlan.company_name : "-"}</div>
+                <div class="col-3">Number Of Passengers: </div>
+                <div class="col-3">{props.flightId ? flightPlan.passengers : "-"}</div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-3">Destionation: </div>
+                <div class="col-3">-</div>
+                <div class="col-3">Arrival Time: </div>
+                <div class="col-3">-</div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-3">Origin: </div>
+                <div class="col-3">-</div>
+                <div class="col-3">Departure Time: </div>
+                <div class="col-3">-</div>
+            </div>
+        </div>
 
-        
+
     );
 }

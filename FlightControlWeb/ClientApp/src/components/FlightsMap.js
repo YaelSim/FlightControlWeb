@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Map, Circle, TileLayer, LayersControl, FeatureGroup, Marker, Polyline } from "react-leaflet";
 import L from 'leaflet';
-import { Curve } from "react-leaflet-curve";
+import Curve from './Curve';
 
-/*const pathOne = ['M', [50.14874640066278, 14.106445312500002],
-  'Q', [51.67255514839676, 16.303710937500004],
-  [50.14874640066278, 18.676757812500004],
-  'T', [49.866316729538674, 25.0927734375]]*/
+const pathOne = ['M', [50.14874640066278, 14.106445312500002],
+    'Q', [51.67255514839676, 16.303710937500004],
+    [50.14874640066278, 18.676757812500004],
+    'T', [49.866316729538674, 25.0927734375]];
 
 export default function FlightsMap(props) {
     const [flightPlan, setFlightPlan] = useState({});
@@ -68,6 +68,7 @@ export default function FlightsMap(props) {
                     >
                     </Marker>
                 ))}
+            <Curve positions={pathOne} option={{ color: 'red' }} />
         </Map>
     );
 }

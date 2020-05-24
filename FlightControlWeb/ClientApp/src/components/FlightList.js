@@ -1,5 +1,6 @@
 ﻿import React, { useState, useEffect, useContext } from "react";
 import FlightIdContext from "../contexts/FlightIdContext.js";
+import styles from './FlightList.module.css'; 
 
 export default function FlightList(props) {
 
@@ -53,12 +54,12 @@ export default function FlightList(props) {
                     .filter(flight => !flight.is_external)
                     .map(flight => (
                         <tr onClick={() => clickHandler(flight.flight_id)}
-                            className={`${flight.flight_id === props.flightId ? 'table-info' : ''}`}
+                            className={`${styles['row-hover']} ${flight.flight_id === props.flightId ? styles['selected-flight'] : ''}`}
                         >
                             <th scope="row">{flight.flight_id}</th>
                             <td>{flight.company_name}</td>
                             <td>No</td>
-                            <td>
+                            <td title="Delete Flight">
                                 <svg
                                     className="bi bi-trash"
                                     onClick={e => deleteRow(flight.flight_id, e)}

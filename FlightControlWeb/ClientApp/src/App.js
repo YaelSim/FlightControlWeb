@@ -6,6 +6,13 @@ import FlightsMap from "./components/FlightsMap.js";
 import DragAndDrop from "./components/DragAndDrop.js"
 //import './custom.css'
 
+const flightListStyles = { 
+    height: "100vh", 
+    overflow: "auto",
+    boxShadow: '0px 0px 6px',
+    zIndex: 9999,
+};
+
 export default function App(props) {
     const [flightId, setFlightId] = useState(null);
     const [flights, setFlights] = useState([]);
@@ -44,7 +51,7 @@ export default function App(props) {
                             </div>
                         </div>
                     </div>
-                    <div className="col-md-4 p-0" style={{ height: "100vh", overflow: "auto" } } >
+                    <div className="col-md-4 p-0" style={flightListStyles} >
                       
                          <FlightList flights={flights} setFlights={setFlights} flightId={flightId} setFlightId={setFlightId} onItemDropped={dragHandler}/>
                     </div>

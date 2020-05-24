@@ -13,7 +13,6 @@ export default function DropAndDrop(props) {
     return (
         <div className="file-upload-wrapper" >
             <input type="file" id="input-file-now" class="file-upload" />
-        </div >
+        </div>
   );
 }
-
