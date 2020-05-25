@@ -19,7 +19,7 @@ export default function App(props) {
     const [flights, setFlights] = useState([]);
 
     async function getFlights() {
-        const r = await fetch('/api/Flights');
+        const r = await fetch('/api/Flights?relative_to=2020-05-21T16:32:22Z');
         return await r.json();
     }
 
