@@ -14,6 +14,7 @@ const flightListStyles = {
 };
 
 export default function App(props) {
+    const [flightPlan, setFlightPlan] = useState({});
     const [flightId, setFlightId] = useState(null);
     const [flights, setFlights] = useState([]);
 
@@ -26,6 +27,19 @@ export default function App(props) {
         getFlights().then(flights => setFlights(flights));
     }, []);
 
+    async function getFlightPlan(id) {
+        const r = await fetch(`/api/FlightPlan/${id}`);
+        return await r.json();
+    }
+
+    useEffect(() => {
+        if (flightId) {
+            getFlightPlan(flightId).then(flightPlan => {
+                setFlightPlan(flightPlan);
+            });
+        }
+    }, [flightId]);
+
     const dragHandler = () => {
         console.log("drag");
     };
@@ -37,7 +51,7 @@ export default function App(props) {
                         <div className="row">
                             <div className="col-md-12">
                                 <div style={{ height: "70vh" }}>
-                                <FlightsMap flights={flights} setFlights={setFlights} flightId={flightId} setFlightId={setFlightId}/>
+                                <FlightsMap flights={flights} setFlights={setFlights} flightId={flightId} setFlightId={setFlightId} flightPlan={flightPlan} setFlightPlan={setFlightPlan}/>
                                 </div>
                             </div>
                         </div>
