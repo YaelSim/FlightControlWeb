@@ -16,11 +16,16 @@ namespace FlightControlWeb.Controllers
         public FlightPlanController(IFlightPlanManager flightPlanManager)
         {
             this.service = flightPlanManager;
-            this.AddFlightPlan(new FlightPlan { CompanyName = "1", InitialLocation = new InitialLocation { Longitude = 1, Latitude = 1, DateTime = new DateTime() }, Segments = null });
-            this.AddFlightPlan(new FlightPlan { CompanyName = "2", InitialLocation = new InitialLocation { Longitude = 2, Latitude = 2, DateTime = new DateTime() }, Segments = null });
-            this.AddFlightPlan(new FlightPlan { CompanyName = "3", InitialLocation = new InitialLocation { Longitude = 3, Latitude = 3, DateTime = new DateTime() }, Segments = null });
 
+            //
+            string example = "2020-12-26T23:56:21Z";
+            DateTime res = DateTime.ParseExact(example, "yyyy-MM-ddTHH:mm:ssZ", System.Globalization.CultureInfo.InvariantCulture);
+            res = TimeZoneInfo.ConvertTimeToUtc(res);
+            //
 
+            this.AddFlightPlan(new FlightPlan { CompanyName = "1", InitialLocation = new InitialLocation { Longitude = 1, Latitude = 1, DateTime = res }, Segments = null });
+            this.AddFlightPlan(new FlightPlan { CompanyName = "2", InitialLocation = new InitialLocation { Longitude = 2, Latitude = 2, DateTime = res }, Segments = null });
+            this.AddFlightPlan(new FlightPlan { CompanyName = "3", InitialLocation = new InitialLocation { Longitude = 3, Latitude = 3, DateTime = res }, Segments = null });
         }
 
         //POST: /api/FlightPlan
