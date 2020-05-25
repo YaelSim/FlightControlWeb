@@ -20,8 +20,7 @@ export default function App(props) {
 
     async function getFlights() {
         const r = await fetch('/api/Flights?relative_to=<2020-12-26T23:56:21Z>&sync_all');
-        console.log(r.json());
-        // return await r.json();
+        return await r.json();
     }
 
     useEffect(() => {
