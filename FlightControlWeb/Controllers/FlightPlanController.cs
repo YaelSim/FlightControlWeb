@@ -17,8 +17,12 @@ namespace FlightControlWeb.Controllers
         {
             this.service = flightPlanManager;
             this.AddFlightPlan(new FlightPlan { CompanyName = "1", InitialLocation = new InitialLocation { Longitude = 1, Latitude = 1, DateTime = new DateTime() }, Segments = null });
+            this.AddFlightPlan(new FlightPlan { CompanyName = "2", InitialLocation = new InitialLocation { Longitude = 2, Latitude = 2, DateTime = new DateTime() }, Segments = null });
+            this.AddFlightPlan(new FlightPlan { CompanyName = "3", InitialLocation = new InitialLocation { Longitude = 3, Latitude = 3, DateTime = new DateTime() }, Segments = null });
+
+
         }
-        
+
         //POST: /api/FlightPlan
         [HttpPost]
         public FlightPlan AddFlightPlan([FromBody] FlightPlan fp)
