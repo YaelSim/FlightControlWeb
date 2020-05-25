@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { Map, Circle, TileLayer, LayersControl, FeatureGroup, Marker, Polyline } from "react-leaflet";
 import L from 'leaflet';
 import Curve from './Curve';
-import styles from './FlightList.module.css'; 
+import styles from './FlightList.module.css';
 
 export default function FlightsMap(props) {
     const [path, setPath] = useState([]);
@@ -37,7 +37,7 @@ export default function FlightsMap(props) {
         if (Object.keys(props.flightPlan).length !== 0) {
             let pathOne = ['M', [props.flightPlan.initial_location.latitude, props.flightPlan.initial_location.longitude]]
             let pathTwo = props.flightPlan.segments.
-            map((segment) => ('T', [segment.latitude, segment.longitude]))
+                map((segment) => ('T', [segment.latitude, segment.longitude]))
             pathOne = [...pathOne, ...pathTwo];
             console.log(pathOne);
             setPath(pathOne);
@@ -61,7 +61,11 @@ export default function FlightsMap(props) {
                     >
                     </Marker>
                 ))}
-            {props.flightId ? <Curve positions={path} option={{ color: "red" } } /> : ""}
+<<<<<<< HEAD
+            {props.flightId ? <Curve positions={path} option={{ color: "red" }} /> : ""}
+=======
+            {props.flightId ? <Curve positions={path} option={{ color: "red" }} /> : ""}
+>>>>>>> 1462863dec5d798aafa1e3faa549f80d6974bcde
         </Map>
     );
 }
