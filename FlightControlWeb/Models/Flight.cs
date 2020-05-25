@@ -7,12 +7,12 @@ namespace FlightControlWeb.Models
 {
     public class Flight
     {
-        public string flight_id { get; set; }
-        public double longitude { get; set; }
-        public double latitude { get; set; }
-        public int passengers { get; set; }
-        public string company_name { get; set; }
-        public DateTime date_time { get; set; }
-        public bool is_external { get; set; }
+        public string FlightId { get; set; }
+        public double Longitude { get; set; }
+        public double Latitude { get; set; }
+        public int Passengers { get; set; }
+        public string CompanyName { get; set; }
+        public DateTime DateTime { get; set; }
+        public bool IsExternal { get; set; }
     }
 }

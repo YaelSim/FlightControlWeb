@@ -19,13 +19,9 @@ export default function App(props) {
     const [flights, setFlights] = useState([]);
 
     async function getFlights() {
-<<<<<<< HEAD
-        const r = await fetch('/api/Flights?relative_to=2020-05-21T16:32:22Z&sync_all');
-        return await r.json();
-=======
-        const r = await fetch('/api/Flights?relative_to=2020-05-21T16:32:22Z&sync_all');
-        return await r.json();
->>>>>>> d47d6ea741e0c1f9f5f4f3e915b9a72fe72ccf11
+        const r = await fetch('/api/Flights?relative_to=<2020-12-26T23:56:21Z>&sync_all');
+        console.log(r.json());
+        // return await r.json();
     }
 
     useEffect(() => {

@@ -15,67 +15,6 @@ namespace FlightControlWeb.Models
         public FlightPlanManager(IServerManager sm)
         {
             serverManager = sm;
-
-            //********************************************
-            string example = "2020-05-21T16:32:22Z";
-            DateTime res = DateTime.ParseExact(example, "yyyy-MM-ddTHH:mm:ssZ", System.Globalization.CultureInfo.InvariantCulture);
-            res = TimeZoneInfo.ConvertTimeToUtc(res);
-            List<Segment> segments = new List<Segment>
-            {
-                new Segment
-                {
-                    Longitude = 4,
-                    Latitude = 4,
-                    Timespan_seconds = 10
-                },
-                new Segment
-                {
-                    Longitude = 5,
-                    Latitude = 5,
-                    Timespan_seconds = 15
-                },
-                new Segment
-                {
-                    Longitude = 6,
-                    Latitude = 6,
-                    Timespan_seconds = 20
-                }
-            };
-
-            this.AddFlightPlan(new FlightPlan
-            {
-                company_name = "1",
-                initial_location = new InitialLocation
-                {
-                    Longitude = 1,
-                    Latitude = 1,
-                    DateTime = res
-                },
-                segments = segments
-            });
-            this.AddFlightPlan(new FlightPlan
-            {
-                company_name = "2",
-                initial_location = new InitialLocation
-                {
-                    Longitude = 2,
-                    Latitude = 2,
-                    DateTime = res
-                },
-                segments = segments
-            });
-            this.AddFlightPlan(new FlightPlan
-            {
-                company_name = "3",
-                initial_location = new InitialLocation
-                {
-                    Longitude = 3,
-                    Latitude = 3,
-                    DateTime = res
-                },
-                segments = segments
-            });
-            //*************************************
         }
         public async Task<IEnumerable<Flight>> GetAllFlightsRelative(DateTime dateTime)
         {
@@ -131,13 +70,13 @@ namespace FlightControlWeb.Models
                             dateTime);
                         flights.Add(new Flight
                         {
-                            flight_id = flightId,
-                            longitude = currentLocation.Key,
-                            latitude = currentLocation.Value,
-                            passengers = flightPlan.passengers,
-                            company_name = flightPlan.company_name,
-                            date_time = flightPlan.initial_location.DateTime, //***??? is initial???***
-                            is_external = isExternal
+                            FlightId = flightId,
+                            Longitude = currentLocation.Key,
+                            Latitude = currentLocation.Value,
+                            Passengers = flightPlan.Passengers,
+                            CompanyName = flightPlan.CompanyName,
+                            DateTime = flightPlan.InitialLocation.DateTime, //***??? is initial???***
+                            IsExternal = isExternal
                         });
                     }
                 }
@@ -181,13 +120,13 @@ namespace FlightControlWeb.Models
         {
             string firstName;
             //If the given flightplan's parameters are too short to generate
-            if (flightPlan.company_name.Length < 2)
+            if (flightPlan.CompanyName.Length < 2)
             {
-                firstName = flightPlan.company_name;
+                firstName = flightPlan.CompanyName;
             } else
             {
                 // get the first 2 chars from the company name
-                firstName = (flightPlan.company_name).Substring(0, 2);
+                firstName = (flightPlan.CompanyName).Substring(0, 2);
             }
             
             // id - first 2 char and 6 random numbers
@@ -197,18 +136,18 @@ namespace FlightControlWeb.Models
         private string GetRandomNumbers()
         {
             Random rand = new Random();
-            string id = (rand.Next(0, 9)).ToString();
+            string id = (rand.Next()).ToString();
             for (int i = 1; i <= 5; i++)
             {
                 //get 6 random numbers
-                id += (rand.Next(0, 9)).ToString();
+                id += (rand.Next()).ToString();
             }
             return id;
         }
         private bool IsFlightActive(FlightPlan flightPlan, DateTime dateTime)
         {
             dateTime = dateTime.ToUniversalTime();
-            DateTime initTime = flightPlan.initial_location.DateTime.ToUniversalTime();
+            DateTime initTime = flightPlan.InitialLocation.DateTime.ToUniversalTime();
             int result = DateTime.Compare(dateTime, initTime);
             // the flight is not active yet 
             if (result < 0)
@@ -216,7 +155,7 @@ namespace FlightControlWeb.Models
                 return false;
             }
 
-            double totalFlightTime = GetTotalTimeOfFlight(flightPlan.segments);
+            double totalFlightTime = GetTotalTimeOfFlight(flightPlan.Segments);
             DateTime endFlight = (initTime.AddSeconds(totalFlightTime)).ToUniversalTime();
             result = DateTime.Compare(dateTime, endFlight);
             // if its later then the flight is not active
@@ -239,22 +178,20 @@ namespace FlightControlWeb.Models
         private KeyValuePair<double, double> GetLocation(FlightPlan flightPlan, DateTime dateTime)
         {
             // calculate the time that elapsed so far since the flight has begun (dateTime.ticks)
-            long elapsedSoFar = dateTime.Ticks - flightPlan.initial_location.DateTime.Ticks;
+            long elapsedSoFar = dateTime.Ticks - flightPlan.InitialLocation.DateTime.Ticks;
             double totalTime = TimeSpan.FromTicks(elapsedSoFar).TotalSeconds;
 
             // get the current segment of this flight
-            int currentSegmentIndex = GetFlightCurrentSegment(flightPlan.segments, totalTime);
+            int currentSegmentIndex = GetFlightCurrentSegment(flightPlan.Segments, totalTime);
 
             //Determine the current initial location according to the currentSegmentIndex
-            DateTime initialFlightTime = flightPlan.initial_location.DateTime;
+            DateTime initialFlightTime = flightPlan.InitialLocation.DateTime;
             for (int i = 0; i < (currentSegmentIndex + 1); i++)
             {
-                //initialFlightTime.AddSeconds(flightPlan.segments[i].Timespan_seconds);
-                initialFlightTime = initialFlightTime.AddSeconds(flightPlan.segments[i].Timespan_seconds);
+                initialFlightTime.AddSeconds(flightPlan.Segments[i].Timespan_seconds);
             }
 
-            //long ticksSoFar = dateTime.Ticks - initialFlightTime.Ticks;
-            long ticksSoFar = Math.Abs( dateTime.Ticks - initialFlightTime.Ticks );
+            long ticksSoFar = dateTime.Ticks - initialFlightTime.Ticks;
             double totalDistanceInSeconds = TimeSpan.FromTicks(ticksSoFar).TotalSeconds;
             return CreateLocationAccordingToCurrentSegment(flightPlan, currentSegmentIndex,
                 totalDistanceInSeconds);
@@ -280,7 +217,7 @@ namespace FlightControlWeb.Models
                 return count;
             }
             // in case of error
-            return 0;
+            return -1;
         }
 
         // After we've calculated the flight's current segment, determine where
@@ -294,17 +231,17 @@ namespace FlightControlWeb.Models
             {
                 prevSegment = new Segment
                 {
-                    Longitude = flightPlan.initial_location.Longitude,
-                    Latitude = flightPlan.initial_location.Latitude,
+                    Longitude = flightPlan.InitialLocation.Longitude,
+                    Latitude = flightPlan.InitialLocation.Latitude,
                     Timespan_seconds = 0
                 };
             } else
             {
-                prevSegment = flightPlan.segments[currentSegmentIndex - 1];
+                prevSegment = flightPlan.Segments[currentSegmentIndex - 1];
             }
 
             // get the next segment loaction properties
-            currentSegment = flightPlan.segments[currentSegmentIndex];
+            currentSegment = flightPlan.Segments[currentSegmentIndex];
             double relativeTime = totalDistance / (currentSegment.Timespan_seconds);
 
             // Perform a linear interpolation in order to determine newXValue and newYValue
