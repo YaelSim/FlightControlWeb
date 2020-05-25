@@ -38,9 +38,9 @@ namespace FlightControlWeb.Controllers
 
         //GET: /api/FlightPlan/{id}
         [HttpGet("{id}")]
-        public FlightPlan GetFlightPlanByUniqueId(string uniqueId)
+        public FlightPlan GetFlightPlanByUniqueId(string id)
         {
-            return service.GetFlightPlanById(uniqueId);
+            return service.GetFlightPlanById(id);
         }
     }
 }
