@@ -359,8 +359,8 @@ namespace FlightControlWeb.Models
         private KeyValuePair<double, double> GetLocation(FlightPlan flightPlan, DateTime dateTime)
         {
             // calculate the time that elapsed so far since the flight has begun (dateTime.ticks)
-            long elapsedSoFar = dateTime.Ticks - flightPlan.initial_location.date_time.Ticks;
-            double totalTime = TimeSpan.FromTicks(elapsedSoFar).TotalSeconds;
+            TimeSpan elapsedSoFar = dateTime - flightPlan.initial_location.date_time;
+            double totalTime = elapsedSoFar.TotalSeconds;
 
             // get the current segment of this flight
             int currentSegmentIndex = GetFlightCurrentSegment(flightPlan.segments, totalTime);
@@ -374,8 +374,8 @@ namespace FlightControlWeb.Models
             }
 
             //long ticksSoFar = dateTime.Ticks - initialFlightTime.Ticks;
-            long ticksSoFar = Math.Abs( dateTime.Ticks - initialFlightTime.Ticks );
-            double totalDistanceInSeconds = TimeSpan.FromTicks(ticksSoFar).TotalSeconds;
+            TimeSpan ticksSoFar = initialFlightTime - dateTime;
+            double totalDistanceInSeconds = ticksSoFar.TotalSeconds;
             return CreateLocationAccordingToCurrentSegment(flightPlan, currentSegmentIndex,
                 totalDistanceInSeconds);
         }
@@ -406,7 +406,7 @@ namespace FlightControlWeb.Models
         // After we've calculated the flight's current segment, determine where
         // exactly this flight is located, relatively to the current segment properties
         private KeyValuePair<double, double> CreateLocationAccordingToCurrentSegment(
-            FlightPlan flightPlan, int currentSegmentIndex, double totalDistance)
+            FlightPlan flightPlan, int currentSegmentIndex, double totalInSeconds)
         {
             Segment prevSegment, currentSegment;
             // If so, the flight's journey is yet to begin
@@ -420,18 +420,20 @@ namespace FlightControlWeb.Models
                 };
             } else
             {
-                prevSegment = flightPlan.segments[currentSegmentIndex - 1];
+                prevSegment = flightPlan.segments[currentSegmentIndex - 2];
             }
 
             // get the next segment loaction properties
             currentSegment = flightPlan.segments[currentSegmentIndex];
-            double relativeTime = totalDistance / (currentSegment.timespan_seconds);
+            double distance = Math.Sqrt(Math.Pow(currentSegment.longitude - prevSegment.longitude,
+                2) + Math.Pow(currentSegment.latitude - currentSegment.latitude, 2));
+            double totalDistance = (totalInSeconds / currentSegment.timespan_seconds) * distance;
 
             // Perform a linear interpolation in order to determine newXValue and newYValue
-            double newXValue = prevSegment.longitude + ((prevSegment.latitude -
-                prevSegment.longitude) / relativeTime);
-            double newYValue = currentSegment.longitude + ((currentSegment.latitude -
-                currentSegment.longitude) / relativeTime);
+            double newXValue = currentSegment.longitude - (totalDistance * (
+                currentSegment.longitude - prevSegment.longitude) / distance);
+            double newYValue = currentSegment.latitude - (totalDistance * (
+                currentSegment.latitude - prevSegment.latitude) / distance);
 
             // return the new values created
             return new KeyValuePair<double, double>(newXValue, newYValue);
