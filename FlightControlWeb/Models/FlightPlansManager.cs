@@ -20,6 +20,78 @@ namespace FlightControlWeb.Models
             string example = "2020-05-21T16:32:22Z";
             DateTime res = DateTime.ParseExact(example, "yyyy-MM-ddTHH:mm:ssZ", System.Globalization.CultureInfo.InvariantCulture);
             res = TimeZoneInfo.ConvertTimeToUtc(res);
+            List<Segment> segmentsRealmo = new List<Segment>
+            {
+                new Segment
+                {
+                    longitude = 32,
+                    latitude = 62,
+                    timespan_seconds = 116
+                },
+                new Segment
+                {
+                    longitude = 13,
+                    latitude = 7,
+                    timespan_seconds = 956
+                }
+            };
+            List<Segment> segmentsAquoavo = new List<Segment>
+            {
+                new Segment
+                {
+                    longitude = 177,
+                    latitude = 88,
+                    timespan_seconds = 567
+                },
+                new Segment
+                {
+                    longitude = 180,
+                    latitude = 85,
+                    timespan_seconds = 420
+                }
+            };
+            List<Segment> segmentsDigigenAirlines = new List<Segment>
+            {
+                new Segment
+                {
+                    longitude = 48,
+                    latitude = 71,
+                    timespan_seconds = 917
+                },
+                new Segment
+                {
+                    longitude = 150,
+                    latitude = 48,
+                    timespan_seconds = 493
+                }
+            };
+            List<Segment> segmentsEmtrakAirways = new List<Segment>
+            {
+                new Segment
+                {
+                    longitude = 13,
+                    latitude = 84,
+                    timespan_seconds = 303
+                },
+                new Segment
+                {
+                    longitude = 10,
+                    latitude = 13,
+                    timespan_seconds = 490
+                },
+                new Segment
+                {
+                    longitude = 34,
+                    latitude = 22,
+                    timespan_seconds = 675
+                },
+                new Segment
+                {
+                    longitude = 31,
+                    latitude = 76,
+                    timespan_seconds = 309
+                },
+            };
             List<Segment> segments = new List<Segment>
             {
                 new Segment
@@ -55,6 +127,42 @@ namespace FlightControlWeb.Models
             });
             this.AddFlightPlan(new FlightPlan
             {
+                passengers = 236,
+                company_name = "Realmo Air",
+                initial_location = new InitialLocation
+                {
+                    latitude = 4,
+                    longitude = 120,
+                    date_time = res
+                },
+                segments = segmentsRealmo
+            });
+            this.AddFlightPlan(new FlightPlan
+            {
+                passengers = 311,
+                company_name = "Aquoavo",
+                initial_location = new InitialLocation
+                {
+                    latitude = 76,
+                    longitude = 89,
+                    date_time = res
+                },
+                segments = segmentsAquoavo
+            });
+            this.AddFlightPlan(new FlightPlan
+            {
+                passengers = 242,
+                company_name = "Digigen Airlines",
+                initial_location = new InitialLocation
+                {
+                    latitude = 35,
+                    longitude = 50,
+                    date_time = res
+                },
+                segments = segmentsDigigenAirlines
+            });
+            this.AddFlightPlan(new FlightPlan
+            {
                 company_name = "2",
                 initial_location = new InitialLocation
                 {
@@ -63,6 +171,18 @@ namespace FlightControlWeb.Models
                     date_time = res
                 },
                 segments = segments
+            });
+            this.AddFlightPlan(new FlightPlan
+            {
+                passengers = 236,
+                company_name = "Emtrak Airways",
+                initial_location = new InitialLocation
+                {
+                    latitude = 34,
+                    longitude = 158,
+                    date_time = res
+                },
+                segments = segmentsEmtrakAirways
             });
             this.AddFlightPlan(new FlightPlan
             {
