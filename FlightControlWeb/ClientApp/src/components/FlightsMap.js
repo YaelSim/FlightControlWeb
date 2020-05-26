@@ -61,7 +61,7 @@ export default function FlightsMap(props) {
                     >
                     </Marker>
                 ))}
-            {props.flightId ? <Curve positions={path} option={{ color: 'red' }} /> : ""}
+            {props.flightId ? <Curve positions={path} option={{ color: 'pink' }} /> : ""}
         </Map>
     );
 }
