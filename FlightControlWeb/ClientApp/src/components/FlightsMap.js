@@ -39,7 +39,6 @@ export default function FlightsMap(props) {
             let pathTwo = props.flightPlan.segments.
             map((segment) => ('T', [segment.latitude, segment.longitude]))
             pathOne = [...pathOne, ...pathTwo];
-            console.log(pathOne);
             setPath(pathOne);
 
         }

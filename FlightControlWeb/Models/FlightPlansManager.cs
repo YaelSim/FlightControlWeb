@@ -17,7 +17,7 @@ namespace FlightControlWeb.Models
             serverManager = sm;
 
             //********************************************
-            string example = "2020-05-21T16:32:22Z";
+            string example = "2020-05-26T17:17:47Z";
             DateTime res = DateTime.ParseExact(example, "yyyy-MM-ddTHH:mm:ssZ", System.Globalization.CultureInfo.InvariantCulture);
             res = TimeZoneInfo.ConvertTimeToUtc(res);
             List<Segment> segmentsRealmo = new List<Segment>
@@ -26,13 +26,13 @@ namespace FlightControlWeb.Models
                 {
                     longitude = 32,
                     latitude = 62,
-                    timespan_seconds = 116
+                    timespan_seconds = 1160
                 },
                 new Segment
                 {
                     longitude = 13,
                     latitude = 7,
-                    timespan_seconds = 956
+                    timespan_seconds = 9560
                 }
             };
             List<Segment> segmentsAquoavo = new List<Segment>
@@ -41,13 +41,13 @@ namespace FlightControlWeb.Models
                 {
                     longitude = 177,
                     latitude = 88,
-                    timespan_seconds = 567
+                    timespan_seconds = 5670
                 },
                 new Segment
                 {
                     longitude = 180,
                     latitude = 85,
-                    timespan_seconds = 420
+                    timespan_seconds = 4200
                 }
             };
             List<Segment> segmentsDigigenAirlines = new List<Segment>
@@ -56,13 +56,13 @@ namespace FlightControlWeb.Models
                 {
                     longitude = 48,
                     latitude = 71,
-                    timespan_seconds = 917
+                    timespan_seconds = 9170
                 },
                 new Segment
                 {
                     longitude = 150,
                     latitude = 48,
-                    timespan_seconds = 493
+                    timespan_seconds = 4930
                 }
             };
             List<Segment> segmentsEmtrakAirways = new List<Segment>
@@ -71,25 +71,25 @@ namespace FlightControlWeb.Models
                 {
                     longitude = 13,
                     latitude = 84,
-                    timespan_seconds = 303
+                    timespan_seconds = 3030
                 },
                 new Segment
                 {
                     longitude = 10,
                     latitude = 13,
-                    timespan_seconds = 490
+                    timespan_seconds = 4900
                 },
                 new Segment
                 {
                     longitude = 34,
                     latitude = 22,
-                    timespan_seconds = 675
+                    timespan_seconds = 6750
                 },
                 new Segment
                 {
                     longitude = 31,
                     latitude = 76,
-                    timespan_seconds = 309
+                    timespan_seconds = 3090
                 },
             };
             List<Segment> segments = new List<Segment>
@@ -98,19 +98,19 @@ namespace FlightControlWeb.Models
                 {
                     longitude = 4,
                     latitude = 4,
-                    timespan_seconds = 10
+                    timespan_seconds = 1000
                 },
                 new Segment
                 {
                     longitude = 5,
                     latitude = 5,
-                    timespan_seconds = 15
+                    timespan_seconds = 1500
                 },
                 new Segment
                 {
                     longitude = 6,
                     latitude = 6,
-                    timespan_seconds = 20
+                    timespan_seconds = 2000
                 }
             };
 
@@ -420,7 +420,7 @@ namespace FlightControlWeb.Models
                 };
             } else
             {
-                prevSegment = flightPlan.segments[currentSegmentIndex - 2];
+                prevSegment = flightPlan.segments[currentSegmentIndex - 1];
             }
 
             // get the next segment loaction properties
