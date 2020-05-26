@@ -358,7 +358,7 @@ namespace FlightControlWeb.Models
         }
         private KeyValuePair<double, double> GetLocation(FlightPlan flightPlan, DateTime dateTime)
         {
-            // calculate the time that elapsed so far since the flight has begun (dateTime.ticks)
+            // calculate the time that elapsed so far since the flight has begun
             TimeSpan elapsedSoFar = dateTime - flightPlan.initial_location.date_time;
             double totalTime = elapsedSoFar.TotalSeconds;
 
