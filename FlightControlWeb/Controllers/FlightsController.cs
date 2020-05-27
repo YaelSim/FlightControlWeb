@@ -29,7 +29,14 @@ namespace FlightControlWeb.Controllers
             bool externalFlightsNeeded = request.Contains("sync_all");
             if (externalFlightsNeeded)
             {
-                return await service.GetAllFlightsRelative(result);
+                try
+                {
+                    return await service.GetAllFlightsRelative(result);
+                } catch (HttpResponseException hre)
+                {
+                    //return StatusCode(hre.Status);
+                    return null;
+                }
             } else
             {
                 return service.GetInternalFlightsRelative(result);

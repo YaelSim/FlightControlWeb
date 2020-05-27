@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -9,6 +10,7 @@ namespace FlightControlWeb.Models
 {
     public class FlightPlanManager : IFlightPlanManager
     {
+        //Dictionary< uniqueId, KeyValuePair< isExternal, FlightPlan> >
         private readonly Dictionary<string, KeyValuePair<bool, FlightPlan>> flightPlans =
             new Dictionary<string, KeyValuePair<bool, FlightPlan>>();
         private readonly IServerManager serverManager;
@@ -226,38 +228,74 @@ namespace FlightControlWeb.Models
         }
         public async Task<IEnumerable<Flight>> GetAllFlightsRelative(DateTime dateTime)
         {
-            //HERE the previous code was......
-            IEnumerable<Flight> flightsTotal = GetInternalFlightsRelative(dateTime);
+            List<Flight> allFlights = new List<Flight>();
+            IEnumerable<Flight> internalFlights = GetInternalFlightsRelative(dateTime);
+            allFlights.AddRange(internalFlights);
+
             string restOfUrl = "/api/Flights?relative_to=";
+            IEnumerable<Server> externalServers = serverManager.GetAllServers();
+
             //For each server on the ServerManager
-            foreach (Server currServer in serverManager.GetAllServers())
+            foreach (Server currServer in externalServers)
             {
-                IEnumerable<Flight> flightsList = null;
+                IEnumerable<Flight> externalFlightsList = null;
                 HttpClient httpClient = new HttpClient();
-                try
-                {
-                    HttpResponseMessage returned = await httpClient.GetAsync(currServer.ServerURL 
+
+                HttpResponseMessage returned = await httpClient.GetAsync(currServer.ServerURL
                         + restOfUrl + dateTime.ToString("yyyy-MM-ddTHH:mm:ssZ"));
 
-                    //Make sure that the returned response was successful
-                    returned.EnsureSuccessStatusCode();
-                    string bodyOfReturned = await returned.Content.ReadAsStringAsync();
-                    Debug.WriteLine(bodyOfReturned); //DELETE AFTERWARDS *************
-                    flightsList = Newtonsoft.Json.JsonConvert.DeserializeObject<IEnumerable<Flight>>(bodyOfReturned);
-                } catch (Exception e)
+                //Make sure that the returned response was successful
+                //returned.EnsureSuccessStatusCode();
+
+                if (!returned.IsSuccessStatusCode)
                 {
-                    Debug.WriteLine("\nException Caught...\n {0}", e.Message);
+                    Controllers.HttpResponseException hre = new Controllers.HttpResponseException
+                    {
+                        //StatusCode = returned.StatusCode,
+                        Status = (int)returned.StatusCode,
+                        Value = "External Server Response Unsuccessful"
+                    };
+                    throw hre;
                 }
+
+                string bodyOfReturned = await returned.Content.ReadAsStringAsync();
+                externalFlightsList = Newtonsoft.Json.JsonConvert.
+                    DeserializeObject<IEnumerable<Flight>>(bodyOfReturned);
+
+                foreach (Flight curr in externalFlightsList) {
+                    curr.IsExternal = true;
+                    allFlights.Add(curr);
+                }
+
+                GetExternalServerFlightPlans(externalFlightsList, httpClient, currServer.ServerURL);
 
                 //Dispose the HttpClient to prevent a leak
                 httpClient.Dispose();
-
-                //Combine the flightsList to flightsTotal. DO WE NEED TO PROVIDE A COMPARATOR? NOT SURE. *************
-                flightsTotal.Union(flightsList);
             }
             
-            return flightsTotal;
+            return allFlights;
         }
+
+        //Maybe this method should return  Task<IEnumerable<FlightPlan>> ??? ***************
+        //Foreach Flight object on the flights list, get the matching flight plan.
+        public async void GetExternalServerFlightPlans(
+            IEnumerable<Flight> flightsList, HttpClient httpClient, string serverUrl)
+        {
+            foreach (Flight flight in flightsList)
+            {
+                string id = flight.FlightId;
+                HttpResponseMessage returned = await httpClient.GetAsync(serverUrl + 
+                    "/api/FlightPlan/" + id);
+                string bodyOfReturned = await returned.Content.ReadAsStringAsync();
+                FlightPlan flightPlan = Newtonsoft.Json.JsonConvert.DeserializeObject<FlightPlan>(
+                    bodyOfReturned);
+
+                //Add this flight plan to the dictionary.
+                //It was already given a uniqueId (its' origin is from another server...)
+                flightPlans.Add(id, new KeyValuePair<bool, FlightPlan>(true, flightPlan));
+            }
+        }
+
         public IEnumerable<Flight> GetInternalFlightsRelative(DateTime dateTime)
         {
             List<Flight> flights = new List<Flight>();
@@ -301,6 +339,7 @@ namespace FlightControlWeb.Models
         }
         public FlightPlan GetFlightPlanById(string uniqueId)
         {
+            //Search within the local flight plans
             bool gotValue = flightPlans.TryGetValue(uniqueId, out KeyValuePair<bool,
                 FlightPlan> output);
 
