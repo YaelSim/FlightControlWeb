@@ -2,14 +2,22 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Text.Json.Serialization;
 
 namespace FlightControlWeb.Models
 {
     public class FlightPlan
     {
-        public int passengers { get; set; }
-        public string company_name { get; set; }
-        public InitialLocation initial_location {get; set; }
-        public List<Segment> segments { get; set; }
+        [JsonPropertyName("passengers")]
+        public int Passengers { get; set; }
+
+        [JsonPropertyName("company_name")]
+        public string CompanyName { get; set; }
+
+        [JsonPropertyName("initial_location")]
+        public InitialLocation InitialLocation {get; set; }
+
+        [JsonPropertyName("segments")]
+        public List<Segment> Segments { get; set; }
     }
 }
