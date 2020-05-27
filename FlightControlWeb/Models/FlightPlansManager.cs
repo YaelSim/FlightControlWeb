@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -239,22 +240,29 @@ namespace FlightControlWeb.Models
             {
                 IEnumerable<Flight> externalFlightsList = null;
                 HttpClient httpClient = new HttpClient();
-                try
-                {
-                    HttpResponseMessage returned = await httpClient.GetAsync(currServer.ServerURL 
+
+                HttpResponseMessage returned = await httpClient.GetAsync(currServer.ServerURL
                         + restOfUrl + dateTime.ToString("yyyy-MM-ddTHH:mm:ssZ"));
 
-                    //Make sure that the returned response was successful
-                    returned.EnsureSuccessStatusCode();
-                    string bodyOfReturned = await returned.Content.ReadAsStringAsync();
-                    externalFlightsList = Newtonsoft.Json.JsonConvert.
-                        DeserializeObject<IEnumerable<Flight>>(bodyOfReturned);
-                } catch (Exception e)
+                //Make sure that the returned response was successful
+                //returned.EnsureSuccessStatusCode();
+
+                if (!returned.IsSuccessStatusCode)
                 {
-                    Debug.WriteLine("\nException Caught...\n {0}", e.Message);
+                    Controllers.HttpResponseException hre = new Controllers.HttpResponseException
+                    {
+                        //StatusCode = returned.StatusCode,
+                        Status = (int)returned.StatusCode,
+                        Value = "External Server Response Unsuccessful"
+                    };
+                    throw hre;
                 }
 
-                foreach(Flight curr in externalFlightsList) {
+                string bodyOfReturned = await returned.Content.ReadAsStringAsync();
+                externalFlightsList = Newtonsoft.Json.JsonConvert.
+                    DeserializeObject<IEnumerable<Flight>>(bodyOfReturned);
+
+                foreach (Flight curr in externalFlightsList) {
                     curr.IsExternal = true;
                     allFlights.Add(curr);
                 }
