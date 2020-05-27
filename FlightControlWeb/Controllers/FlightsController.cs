@@ -25,15 +25,29 @@ namespace FlightControlWeb.Controllers
             [FromQuery(Name = "relative_to")] string dateTime)
         {
             string request = Request.QueryString.Value;
-            DateTime result = GetDateTimeAccordingfToStr(dateTime);
-            bool externalFlightsNeeded = request.Contains("sync_all");
-            if (externalFlightsNeeded)
+            try
             {
-                return await service.GetAllFlightsRelative(result);
-            } else
-            {
-                return service.GetInternalFlightsRelative(result);
+                DateTime result = GetDateTimeAccordingfToStr(dateTime);
+                bool externalFlightsNeeded = request.Contains("sync_all");
+                if (externalFlightsNeeded)
+                {
+                    return await service.GetAllFlightsRelative(result);
+                }
+                else
+                {
+                    return service.GetInternalFlightsRelative(result);
+                }
             }
+            catch (HttpResponseException hre)
+            {
+                //return StatusCode(hre.Status);
+                return null;
+            } catch (FormatException)
+            {
+                //return BadRequest();
+                return null;
+            }
+
         }
 
         // DELETE: /api/Flights/{id}
@@ -53,6 +67,7 @@ namespace FlightControlWeb.Controllers
 
         private DateTime GetDateTimeAccordingfToStr(string dateTime)
         {
+            //May throw an exception.
             DateTime result = DateTime.ParseExact(dateTime, "yyyy-MM-ddTHH:mm:ssZ",
                CultureInfo.InvariantCulture);
             result = TimeZoneInfo.ConvertTimeToUtc(result);
