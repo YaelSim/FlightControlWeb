@@ -307,25 +307,28 @@ namespace FlightControlWeb.Models
                 bool isExternal = flightPlanKeyValuePair.Value.Key;
                 DateTime dateTimeUTC = TimeZoneInfo.ConvertTimeToUtc(dateTime);
 
-                if (!isExternal)
+                //Manage only internal flights.
+                if (isExternal)
                 {
-                    //add only if the flight is active
-                    if (IsFlightActive(flightPlan, dateTime))
+                    continue;
+                }
+
+                //add only if the flight is active
+                if (IsFlightActive(flightPlan, dateTime))
+                {
+                    // get the updated location according to longitude and latitude
+                    KeyValuePair<double, double> currentLocation = GetLocation(flightPlan,
+                        dateTimeUTC);
+                    flights.Add(new Flight
                     {
-                        // get the updated location according to longitude and latitude
-                        KeyValuePair<double, double> currentLocation = GetLocation(flightPlan,
-                            dateTimeUTC);
-                        flights.Add(new Flight
-                        {
-                            FlightId = flightId,
-                            Longitude = currentLocation.Key,
-                            Latitude = currentLocation.Value,
-                            Passengers = flightPlan.Passengers,
-                            CompanyName = flightPlan.CompanyName,
-                            DateTime = flightPlan.InitialLocation.date_time, //***??? is initial???***
-                            IsExternal = isExternal
-                        });
-                    }
+                        FlightId = flightId,
+                        Longitude = currentLocation.Key,
+                        Latitude = currentLocation.Value,
+                        Passengers = flightPlan.Passengers,
+                        CompanyName = flightPlan.CompanyName,
+                        DateTime = flightPlan.InitialLocation.date_time,
+                        IsExternal = isExternal
+                    });
                 }
             }
 
