@@ -2,17 +2,31 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Text.Json.Serialization;
 
 namespace FlightControlWeb.Models
 {
     public class Flight
     {
-        public string flight_id { get; set; }
-        public double longitude { get; set; }
-        public double latitude { get; set; }
-        public int passengers { get; set; }
-        public string company_name { get; set; }
-        public DateTime date_time { get; set; }
-        public bool is_external { get; set; }
+        [JsonPropertyName("flight_id")]
+        public string FlightId { get; set; }
+
+        [JsonPropertyName("longitude")]
+        public double Longitude { get; set; }
+
+        [JsonPropertyName("latitude")]
+        public double Latitude { get; set; }
+
+        [JsonPropertyName("passengers")]
+        public int Passengers { get; set; }
+
+        [JsonPropertyName("company_name")]
+        public string CompanyName { get; set; }
+
+        [JsonPropertyName("date_time")]
+        public DateTime DateTime { get; set; }
+
+        [JsonPropertyName("is_external")]
+        public bool IsExternal { get; set; }
     }
 }
