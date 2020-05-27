@@ -9,6 +9,7 @@
     "jquery": "^3.4.1",
     "leaflet": "^1.6.0",
     "leaflet-curve": "^1.0.0",
+    "leaflet-rotatedmarker": "^0.2.0",
     "leaflet.bezier": "^0.1.0",
     "merge": "^1.2.1",
     "oidc-client": "^1.9.0",

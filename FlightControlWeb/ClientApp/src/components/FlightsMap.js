@@ -2,31 +2,37 @@ import React, { useState, useEffect, useContext } from "react";
 import { Map, Circle, TileLayer, LayersControl, FeatureGroup, Marker, Polyline } from "react-leaflet";
 import L from 'leaflet';
 import Curve from './Curve';
-import styles from './FlightList.module.css'; 
+import 'leaflet-rotatedmarker';
+const iconUrl = require('../images/coloredPlane.png');
+const iconRetinaUrl = require('../images/coloredPlane.png');
 
 export default function FlightsMap(props) {
     const [path, setPath] = useState([]);
 
-    const iconAirplane = new L.Icon({
-        iconUrl: require('../images/plane.png'),
-        iconRetinaUrl: require('../images/plane.png'),
-        iconAnchor: null,
-        popupAnchor: null,
-        shadowUrl: null,
-        shadowSize: null,
-        shadowAnchor: null,
-        iconSize: new L.point(50, 50)
-    });
+    const iconAirplane = (flight) => {
+        return new L.Icon({
+            iconUrl: require('../images/plane.png'),
+            iconRetinaUrl: require('../images/plane.png'),
+            iconAnchor: null,
+            popupAnchor: null,
+            shadowUrl: null,
+            shadowSize: null,
+            shadowAnchor: null,
+            iconSize: new L.point(50, 50),
+            rotationAngle: 180,
+        })
+    };
 
-    const coloredAirplane = new L.Icon({
-        iconUrl: require('../images/coloredPlane.png'),
-        iconRetinaUrl: require('../images/coloredPlane.png'),
+    const coloredAirplane = (flight) => new L.Icon({
+        iconUrl,
+        iconRetinaUrl,
         iconAnchor: null,
         popupAnchor: null,
         shadowUrl: null,
         shadowSize: null,
         shadowAnchor: null,
-        iconSize: new L.point(50, 50)
+        iconSize: new L.point(50, 50),
+        rotationAngle: flight.angle || 0,
     });
 
     const clickHandler = (flightId) => {
@@ -34,13 +40,12 @@ export default function FlightsMap(props) {
     };
 
     useEffect(() => {
-        if (Object.keys(props.flightPlan).length !== 0) {
+        if (props.flightPlan) {
             let pathOne = ['M', [props.flightPlan.initial_location.latitude, props.flightPlan.initial_location.longitude]]
             let pathTwo = props.flightPlan.segments.
-            map((segment) => ('T', [segment.latitude, segment.longitude]))
+                map((segment) => ('T', [segment.latitude, segment.longitude]))
             pathOne = [...pathOne, ...pathTwo];
             setPath(pathOne);
-
         }
     }, [props.flightPlan]);
 
@@ -56,11 +61,11 @@ export default function FlightsMap(props) {
                     <Marker
                         position={[flight.latitude, flight.longitude]}
                         onClick={() => clickHandler(flight.flight_id)}
-                        icon={flight.flight_id === props.flightId ? coloredAirplane : iconAirplane}
+                        icon={flight.flight_id === props.flightId ? coloredAirplane(flight) : iconAirplane(flight)}
                     >
                     </Marker>
                 ))}
-            {props.flightId ? <Curve positions={path} option={{ color: 'pink' }} /> : ""}
+            {props.flightId ? <Curve positions={path} option={{ color: '#ff85e5' }} /> : ""}
         </Map>
     );
 }

@@ -5,6 +5,7 @@ import FlightIdContext from "./contexts/FlightIdContext.js";
 import FlightsMap from "./components/FlightsMap.js";
 import DragAndDrop from "./components/DragAndDrop.js"
 import Dropzone, { useDropzone } from "react-dropzone"
+import './custom.css';
 
 const flightListStyles = {
     height: "100vh",
@@ -34,7 +35,7 @@ function useInterval(callback, delay) {
 }
 
 export default function App(props) {
-    const [flightPlan, setFlightPlan] = useState({});
+    const [flightPlan, setFlightPlan] = useState();
     const [flightId, setFlightId] = useState(null);
     const [flights, setFlights] = useState([]);
 
@@ -44,11 +45,36 @@ export default function App(props) {
         return await r.json();
     }
 
+    // const fetchFlights = () => {
+    //     getFlights().then(newFlights => {
+    //         setFlights(newFlights);
+    //         setTimeout(fetchFlights, 1000);
+    //     });
+    // }
+
+    // useEffect(() => {
+    //     fetchFlights();
+    // }, []);
+
     useInterval(() => {
-        getFlights().then(flights =>
-            setFlights(flights)
-        ).catch(console.error);
-    }, 1000);
+        getFlights().then(newFlights => {
+            for (const newFlight of newFlights) {
+                const previousFlight = flights &&
+                    flights.find(flight => flight.flight_id === newFlight.flight_id);
+
+                if (previousFlight) {
+                    const x = newFlight.latitude - previousFlight.latitude;
+                    const y = newFlight.longitude - previousFlight.longitude;
+                    const angle = Math.atan2(y, x);
+                    const degrees = 180 * angle / Math.PI;
+                    const angleInDegrees = (360 + Math.round(degrees)) % 360;
+                    newFlight.angle = angleInDegrees;
+                }
+            }
+
+            setFlights(newFlights);
+        }).catch(console.error);
+    }, 3000);
 
     async function getFlightPlan(id) {
         const r = await fetch(`/api/FlightPlan/${id}`);
@@ -60,6 +86,8 @@ export default function App(props) {
             getFlightPlan(flightId).then(flightPlan => {
                 setFlightPlan(flightPlan);
             });
+        } else {
+            setFlightPlan(null);
         }
     }, [flightId]);
 
@@ -78,7 +106,7 @@ export default function App(props) {
                         <div className="col-md-12">
                             <div className="card" style={{ height: "30vh" }}>
                                 <div className="card-body">
-                                    <FlightDetails flightId={flightId} setFlightId={setFlightId} />
+                                    <FlightDetails flightId={flightId} setFlightId={setFlightId} flightPlan={flightPlan} setFlightPlan={setFlightPlan} />
                                 </div>
                             </div>
                         </div>

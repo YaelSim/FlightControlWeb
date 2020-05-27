@@ -1,14 +1,13 @@
 /* Provide sufficient contrast against white background */
-a {
-  color: #0366d6;
+.custom-file-input:lang(en) ~ .custom-file-label::after {
+  background-color: rgba(232, 114, 136, 0.28);
 }
 
-code {
-  color: #E01A76;
+.custom-file-input {
+  cursor: pointer;
 }
 
-.btn-primary {
-  color: #fff;
-  background-color: #1b6ec2;
-  border-color: #1861ac;
+.custom-file-input:focus ~ .custom-file-label {
+  border-color: initial;
+  box-shadow: none;
 }
