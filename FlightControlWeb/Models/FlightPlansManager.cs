@@ -240,6 +240,7 @@ namespace FlightControlWeb.Models
                 FlightPlan flightPlan = flightPlanKeyValuePair.Value.Value;
                 string flightId = flightPlanKeyValuePair.Key;
                 bool isExternal = flightPlanKeyValuePair.Value.Key;
+                DateTime dateTimeUTC = TimeZoneInfo.ConvertTimeToUtc(dateTime);
 
                 if (!isExternal)
                 {
@@ -248,7 +249,7 @@ namespace FlightControlWeb.Models
                     {
                         // get the updated location according to longitude and latitude
                         KeyValuePair<double, double> currentLocation = GetLocation(flightPlan,
-                            dateTime);
+                            dateTimeUTC);
                         flights.Add(new Flight
                         {
                             flight_id = flightId,
