@@ -279,13 +279,13 @@ namespace FlightControlWeb.Models
                             dateTimeUTC);
                         flights.Add(new Flight
                         {
-                            flight_id = flightId,
-                            longitude = currentLocation.Key,
-                            latitude = currentLocation.Value,
-                            passengers = flightPlan.passengers,
-                            company_name = flightPlan.company_name,
-                            date_time = flightPlan.initial_location.date_time, //***??? is initial???***
-                            is_external = isExternal
+                            FlightId = flightId,
+                            Longitude = currentLocation.Key,
+                            Latitude = currentLocation.Value,
+                            Passengers = flightPlan.passengers,
+                            CompanyName = flightPlan.company_name,
+                            DateTime = flightPlan.initial_location.date_time, //***??? is initial???***
+                            IsExternal = isExternal
                         });
                     }
                 }
