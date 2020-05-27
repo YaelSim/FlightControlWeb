@@ -2,6 +2,7 @@
 import FlightIdContext from "../contexts/FlightIdContext.js";
 import styles from './FlightList.module.css'; 
 import DragAndDrop from './DragAndDrop'
+import FlightLoadingButton from "./FlightLoadingButton.js";
 
 export default function FlightList(props) {
 
@@ -41,6 +42,8 @@ export default function FlightList(props) {
     };
 
     return (
+        <div>
+            <FlightLoadingButton />
         <table className="table table-hover">
             <thead className="thead">
                 <tr>
@@ -91,6 +94,7 @@ export default function FlightList(props) {
                         </tr>
                     ))}
             </tbody>
-        </table>
+            </table>
+        </div>
     );
 }
