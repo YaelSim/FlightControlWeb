@@ -17,7 +17,7 @@ namespace FlightControlWeb.Models
             serverManager = sm;
 
             //********************************************
-            string example = "2020-05-26T17:17:47Z";
+            string example = "2020-05-27T07:00:47Z";
             DateTime res = DateTime.ParseExact(example, "yyyy-MM-ddTHH:mm:ssZ", System.Globalization.CultureInfo.InvariantCulture);
             res = TimeZoneInfo.ConvertTimeToUtc(res);
             List<Segment> segmentsRealmo = new List<Segment>
@@ -33,6 +33,21 @@ namespace FlightControlWeb.Models
                     longitude = 13,
                     latitude = 7,
                     timespan_seconds = 9560
+                }
+            };
+            List<Segment> segmentsISRAIR = new List<Segment>
+            {
+                new Segment
+                {
+                    longitude = 35.211514,
+                    latitude = 31.769399,
+                    timespan_seconds = 10000
+                },
+                new Segment
+                {
+                    longitude = 34.781668,
+                    latitude = 32.113742,
+                    timespan_seconds = 60000
                 }
             };
             List<Segment> segmentsAquoavo = new List<Segment>
@@ -136,6 +151,18 @@ namespace FlightControlWeb.Models
                     date_time = res
                 },
                 segments = segmentsRealmo
+            });
+            this.AddFlightPlan(new FlightPlan
+            {
+                passengers = 236,
+                company_name = "ISRAIR",
+                initial_location = new InitialLocation
+                {
+                    latitude = 29.555631,
+                    longitude = 34.957610,
+                    date_time = res
+                },
+                segments = segmentsISRAIR
             });
             this.AddFlightPlan(new FlightPlan
             {
