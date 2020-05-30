@@ -19,7 +19,7 @@ namespace FlightControlWeb.Models
             serverManager = sm;
 
             //********************************************
-            string example = "2020-05-27T07:00:47Z";
+            string example = "2020-05-30T07:00:47Z";
             DateTime res = DateTime.ParseExact(example, "yyyy-MM-ddTHH:mm:ssZ", System.Globalization.CultureInfo.InvariantCulture);
             res = TimeZoneInfo.ConvertTimeToUtc(res);
             List<Segment> segmentsRealmo = new List<Segment>
