@@ -1,11 +1,9 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import FlightList from "./components/FlightList.js";
 import FlightDetails from "./components/FlightDetails";
-import FlightIdContext from "./contexts/FlightIdContext.js";
 import FlightsMap from "./components/FlightsMap.js";
-import DragAndDrop from "./components/DragAndDrop.js"
-import Dropzone, { useDropzone } from "react-dropzone"
-import './custom.css';
+import { useToasts } from 'react-toast-notifications'
+import request from "./utils/request";
 
 const flightListStyles = {
     height: "100vh",
@@ -14,74 +12,47 @@ const flightListStyles = {
     zIndex: 9999
 };
 
-function useInterval(callback, delay) {
-    const savedCallback = useRef();
-
-    // Remember the latest callback.
-    useEffect(() => {
-        savedCallback.current = callback;
-    }, [callback]);
-
-    // Set up the interval.
-    useEffect(() => {
-        function tick() {
-            savedCallback.current();
-        }
-        if (delay !== null) {
-            let id = setInterval(tick, delay);
-            return () => clearInterval(id);
-        }
-    }, [delay]);
-}
-
 export default function App(props) {
     const [flightPlan, setFlightPlan] = useState();
     const [flightId, setFlightId] = useState(null);
     const [flights, setFlights] = useState([]);
+    const { addToast } = useToasts();
 
-    async function getFlights() {
-        const isoDateString = new Date().toISOString().replace(/\.\d*Z/, 'Z');
-        const r = await fetch(`/api/Flights?relative_to=${isoDateString}&sync_all`);
-        return await r.json();
-    }
-
-    // const fetchFlights = () => {
-    //     getFlights().then(newFlights => {
-    //         setFlights(newFlights);
-    //         setTimeout(fetchFlights, 1000);
-    //     });
-    // }
-
-    // useEffect(() => {
-    //     fetchFlights();
-    // }, []);
-
-    useInterval(() => {
-        getFlights().then(newFlights => {
-            for (const newFlight of newFlights) {
-                const previousFlight = flights &&
-                    flights.find(flight => flight.flight_id === newFlight.flight_id);
-
-                if (previousFlight) {
-                    const x = newFlight.latitude - previousFlight.latitude;
-                    const y = newFlight.longitude - previousFlight.longitude;
-                    const angle = Math.atan2(y, x);
-                    const degrees = 180 * angle / Math.PI;
-                    const angleInDegrees = (360 + Math.round(degrees)) % 360;
-                    newFlight.angle = angleInDegrees;
+    useEffect(() => {
+        async function getFlights() {
+            try {
+                //throw new Error("fetching flights failed, please try again later")
+                const isoDateString = new Date().toISOString().replace(/\.\d*Z/, 'Z');
+                const flights = await request(`/api/Flights?relative_to=${isoDateString}&sync_all`);
+                setFlights(flights);
+                setTimeout(getFlights, 1000);
+            } catch (error) {
+                if (error && error.message) {
+                    addToast(error.message, { appearance: 'error' })
+                } else {
+                    addToast("fetching flights failed, please try again later", { appearance: 'error' })
                 }
             }
 
-            setFlights(newFlights);
-        }).catch(console.error);
-    }, 3000);
+        }
+        getFlights();
+    }, []);
 
     async function getFlightPlan(id) {
-        const r = await fetch(`/api/FlightPlan/${id}`);
-        return await r.json();
+        try {
+            //throw new Error("fetching flightPlan failed, please try again later")
+            return await request(`/api/FlightPlan/${id}`);
+        } catch (error) {
+            if (error && error.message) {
+                addToast(error.message, { appearance: 'error' })
+            } else {
+                addToast("fetching flightPlan failed, please try again later", { appearance: 'error' })
+            }
+        }
     }
 
     useEffect(() => {
+
         if (flightId) {
             getFlightPlan(flightId).then(flightPlan => {
                 setFlightPlan(flightPlan);

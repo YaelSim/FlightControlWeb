@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useContext } from "react";
-import { Map, Circle, TileLayer, LayersControl, FeatureGroup, Marker, Polyline } from "react-leaflet";
+import React, { useState, useEffect } from "react";
+import { Map, TileLayer, Marker } from "react-leaflet";
 import L from 'leaflet';
 import Curve from './Curve';
 import 'leaflet-rotatedmarker';
@@ -42,8 +42,8 @@ export default function FlightsMap(props) {
     useEffect(() => {
         if (props.flightPlan) {
             let pathOne = ['M', [props.flightPlan.initial_location.latitude, props.flightPlan.initial_location.longitude]]
-            let pathTwo = props.flightPlan.segments.
-                map((segment) => ('T', [segment.latitude, segment.longitude]))
+            let pathTwo = props.flightPlan.segments
+                .map((segment) => ('T', [segment.latitude, segment.longitude]))
             pathOne = [...pathOne, ...pathTwo];
             setPath(pathOne);
         }
@@ -56,9 +56,10 @@ export default function FlightsMap(props) {
                 attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
-            {props.flights
+            {props.flights && props.flights
                 .map(flight => (
                     <Marker
+                        key={flight.flight_id}
                         position={[flight.latitude, flight.longitude]}
                         onClick={() => clickHandler(flight.flight_id)}
                         icon={flight.flight_id === props.flightId ? coloredAirplane(flight) : iconAirplane(flight)}

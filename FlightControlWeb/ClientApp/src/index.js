@@ -3,15 +3,14 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
 import 'leaflet/dist/leaflet.css';
+import { ToastProvider } from 'react-toast-notifications'
 
-//const baseUrl = document.getElementsByTagName('base')[0].getAttribute('href');
 const rootElement = document.getElementById('root');
 
 ReactDOM.render(
-    //<BrowserRouter basename={baseUrl}>
-        <App />,
-  //</BrowserRouter>,
+  <ToastProvider placement = "top-center" autoDismiss >
+    <App />
+  </ToastProvider>,
   rootElement);
 
-//registerServiceWorker();
 
