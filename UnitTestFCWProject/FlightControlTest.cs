@@ -3,12 +3,174 @@ using FlightControlWeb;
 using FlightControlWeb.Controllers;
 using FlightControlWeb.Models;
 using System.Collections.Generic;
+using System;
+using System.Linq;
 
 namespace UnitTestFCWProject
 {
     [TestClass]
     public class FlightControlTest
     {
+        [TestMethod]
+        public void CheckIfFlightActive ()
+        {
+            // Create Flight plans
+            IServerManager servers = new ServersMamager();
+            FlightPlanManager flightPlanManager = new FlightPlanManager(servers);
+
+            // time of the flight
+            string exampleA = "2020-05-31T00:00:00Z";
+            DateTime timeA = DateTime.ParseExact(exampleA, "yyyy-MM-ddTHH:mm:ssZ",
+                System.Globalization.CultureInfo.InvariantCulture);
+            timeA = TimeZoneInfo.ConvertTimeToUtc(timeA);
+
+            List<Segment> segments = new List<Segment>
+            {
+                new Segment
+                {
+                    Longitude = 32,
+                    Latitude = 32,
+                    TimespanSeconds = 20
+                },
+                new Segment
+                {
+                    Longitude = 38,
+                    Latitude = 38,
+                    TimespanSeconds = 40
+                }
+            };
+            InitialLocation initial = new InitialLocation { 
+                Longitude = 32,
+                Latitude = 32,
+                DateTime = timeA
+            };
+            FlightPlan flight = new FlightPlan {
+                Passengers = 200,
+                CompanyName = "ISRAIR",
+                InitialLocation = initial,
+                Segments = segments
+            };
+
+            // time after flight
+            string exampleB = "2020-05-31T00:01:10Z";
+            DateTime timeB = DateTime.ParseExact(exampleB, "yyyy-MM-ddTHH:mm:ssZ",
+                System.Globalization.CultureInfo.InvariantCulture);
+            timeB = TimeZoneInfo.ConvertTimeToUtc(timeB);
+
+            // What the methot need to return
+            bool expectedA = true;
+            bool expectedB = false;
+
+            //check id flight is active
+            bool actualA = flightPlanManager.IsFlightActive(flight, timeA);
+            bool actualB = flightPlanManager.IsFlightActive(flight, timeB);
+
+            // Test
+            Assert.AreEqual(expectedA, actualA);
+            Assert.AreEqual(expectedB, actualB);
+        }
+
+        [TestMethod]
+        public void checkTotalTimeOfFlight()
+        {
+            // Create Segments list
+            IServerManager servers = new ServersMamager();
+            FlightPlanManager flightPlanManager = new FlightPlanManager(servers);
+            List<Segment> segments = new List<Segment>
+            {
+                new Segment
+                {
+                    Longitude = 32,
+                    Latitude = 62,
+                    TimespanSeconds = 13
+                },
+                new Segment
+                {
+                    Longitude = 32,
+                    Latitude = 62,
+                    TimespanSeconds = 15
+                },
+                  new Segment
+                {
+                    Longitude = 32,
+                    Latitude = 62,
+                    TimespanSeconds = 26
+                },
+                new Segment
+                {
+                    Longitude = 32,
+                    Latitude = 62,
+                    TimespanSeconds = 167
+                }
+            };
+
+            // What the methot need to return
+            double expected = 221;
+
+            // Calculate total time of the flight
+            double actual = flightPlanManager.GetTotalTimeOfFlight(segments);
+
+            // Test
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void checkFlightCurrentSegment()
+        {
+            // Create Segments list
+            IServerManager servers = new ServersMamager();
+            FlightPlanManager flightPlanManager = new FlightPlanManager(servers);
+            List<Segment> segments = new List<Segment>
+            {
+                new Segment
+                {
+                    Longitude = 32,
+                    Latitude = 62,
+                    TimespanSeconds = 10
+                },
+                new Segment
+                {
+                    Longitude = 34,
+                    Latitude = 64,
+                    TimespanSeconds = 15
+                },
+                  new Segment
+                {
+                    Longitude = 36,
+                    Latitude = 66,
+                    TimespanSeconds = 20
+                },
+                new Segment
+                {
+                    Longitude = 38,
+                    Latitude = 68,
+                    TimespanSeconds = 25
+                },
+                   new Segment
+                {
+                    Longitude = 39,
+                    Latitude = 69,
+                    TimespanSeconds = 30
+                },
+                new Segment
+                {
+                    Longitude = 37,
+                    Latitude = 67,
+                    TimespanSeconds = 35
+                }
+            };
+            double totalTime = 50;
+
+            // What the methot need to return
+            int expected = 3;
+
+            // Get the index of the segment in the list
+            int actual = flightPlanManager.GetFlightCurrentSegment(segments, totalTime);
+
+            // Test
+            Assert.AreEqual(expected, actual);
+        }
+
         [TestMethod]
         public void CheckRemoveServer()
         {
@@ -33,9 +195,36 @@ namespace UnitTestFCWProject
         }
 
         [TestMethod]
-        public void CheckRemoveFlightPlan ()
+        public void CheckReturnedServersList()
         {
+            // Create servers list
+            IServerManager serversList = new ServersMamager();
+            Server serverA = new Server { ServerId = "1234", ServerURL = "AAA1234" };
+            Server serverB = new Server { ServerId = "5678", ServerURL = "BBB5678" };
+            Server serverC = new Server { ServerId = "9101", ServerURL = "CCC9101" };
+            serversList.AddServer(serverA);
+            serversList.AddServer(serverB);
+            serversList.AddServer(serverC);
 
+            // What the methot need to return
+            int expectedCount = 3;
+            List<Server> expectedList = new List<Server>();
+            expectedList.Add(serverA);
+            expectedList.Add(serverB);
+            expectedList.Add(serverC);
+
+            //Get list of all the servers
+            IEnumerable<Server> actual = serversList.GetAllServers();
+
+            // Test
+            Assert.AreEqual(expectedCount, actual.Count());
+            int i = 0;
+            foreach (Server server in actual)
+            {
+                Assert.AreEqual(expectedList[i].ServerId, server.ServerId);
+                Assert.AreEqual(expectedList[i].ServerURL, server.ServerURL);
+                i++;
+            }
         }
     }
 }

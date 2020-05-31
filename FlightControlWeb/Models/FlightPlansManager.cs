@@ -187,7 +187,7 @@ namespace FlightControlWeb.Models
             }
             return id;
         }
-        private bool IsFlightActive(FlightPlan flightPlan, DateTime dateTime)
+        public bool IsFlightActive(FlightPlan flightPlan, DateTime dateTime)
         {
             dateTime = dateTime.ToUniversalTime();
             DateTime initTime = flightPlan.InitialLocation.DateTime.ToUniversalTime();
@@ -208,7 +208,7 @@ namespace FlightControlWeb.Models
             }
             return true;
         }
-        private double GetTotalTimeOfFlight(List<Segment> segmentList)
+        public double GetTotalTimeOfFlight(List<Segment> segmentList)
         {
             double totalTime = 0;
             // combine all timespans of the flightplan's segments to create a total time
@@ -246,7 +246,7 @@ namespace FlightControlWeb.Models
         //Everytime a segment whose timespan is smaller than totalTime is met, we reduce its' value.
         //When a segment whose timespan is smaller than (the current or updated) totalTime is met,
         // we'll return the current count value.
-        private int GetFlightCurrentSegment(IEnumerable<Segment> segments, double totalTime)
+        public int GetFlightCurrentSegment(IEnumerable<Segment> segments, double totalTime)
         {
             int count = 0;
             foreach (Segment curr in segments)
