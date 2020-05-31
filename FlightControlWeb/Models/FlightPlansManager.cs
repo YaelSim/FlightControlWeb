@@ -118,7 +118,7 @@ namespace FlightControlWeb.Models
                         Latitude = currentLocation.Value,
                         Passengers = flightPlan.Passengers,
                         CompanyName = flightPlan.CompanyName,
-                        DateTime = flightPlan.InitialLocation.date_time,
+                        DateTime = flightPlan.InitialLocation.DateTime,
                         IsExternal = isExternal
                     });
                 }
@@ -190,7 +190,7 @@ namespace FlightControlWeb.Models
         private bool IsFlightActive(FlightPlan flightPlan, DateTime dateTime)
         {
             dateTime = dateTime.ToUniversalTime();
-            DateTime initTime = flightPlan.InitialLocation.date_time.ToUniversalTime();
+            DateTime initTime = flightPlan.InitialLocation.DateTime.ToUniversalTime();
             int result = DateTime.Compare(dateTime, initTime);
             // the flight is not active yet 
             if (result < 0)
@@ -214,25 +214,25 @@ namespace FlightControlWeb.Models
             // combine all timespans of the flightplan's segments to create a total time
             foreach (Segment segment in segmentList)
             {
-                totalTime += segment.timespan_seconds;
+                totalTime += segment.TimespanSeconds;
             }
             return totalTime;
         }
         private KeyValuePair<double, double> GetLocation(FlightPlan flightPlan, DateTime dateTime)
         {
             // calculate the time that elapsed so far since the flight has begun
-            TimeSpan elapsedSoFar = dateTime - flightPlan.InitialLocation.date_time;
+            TimeSpan elapsedSoFar = dateTime - flightPlan.InitialLocation.DateTime;
             double totalTime = elapsedSoFar.TotalSeconds;
 
             // get the current segment of this flight
             int currentSegmentIndex = GetFlightCurrentSegment(flightPlan.Segments, totalTime);
 
             //Determine the current initial location according to the currentSegmentIndex
-            DateTime initialFlightTime = flightPlan.InitialLocation.date_time;
+            DateTime initialFlightTime = flightPlan.InitialLocation.DateTime;
             for (int i = 0; i < (currentSegmentIndex + 1); i++)
             {
                 //initialFlightTime.AddSeconds(flightPlan.segments[i].Timespan_seconds);
-                initialFlightTime = initialFlightTime.AddSeconds(flightPlan.Segments[i].timespan_seconds);
+                initialFlightTime = initialFlightTime.AddSeconds(flightPlan.Segments[i].TimespanSeconds);
             }
 
             //long ticksSoFar = dateTime.Ticks - initialFlightTime.Ticks;
@@ -252,9 +252,9 @@ namespace FlightControlWeb.Models
             foreach (Segment curr in segments)
             {
                 //If the given totalTime > curr's timespan (measured in seconds)
-                if (totalTime > curr.timespan_seconds)
+                if (totalTime > curr.TimespanSeconds)
                 {
-                    totalTime = totalTime - curr.timespan_seconds;
+                    totalTime = totalTime - curr.TimespanSeconds;
                     count += 1;
                     continue;
                 }
@@ -276,9 +276,9 @@ namespace FlightControlWeb.Models
             {
                 prevSegment = new Segment
                 {
-                    longitude = flightPlan.InitialLocation.longitude,
-                    latitude = flightPlan.InitialLocation.latitude,
-                    timespan_seconds = 0
+                    Longitude = flightPlan.InitialLocation.Longitude,
+                    Latitude = flightPlan.InitialLocation.Latitude,
+                    TimespanSeconds = 0
                 };
             } else
             {
@@ -287,15 +287,15 @@ namespace FlightControlWeb.Models
 
             // get the next segment loaction properties
             currentSegment = flightPlan.Segments[currentSegmentIndex];
-            double distance = Math.Sqrt(Math.Pow(currentSegment.longitude - prevSegment.longitude,
-                2) + Math.Pow(currentSegment.latitude - currentSegment.latitude, 2));
-            double totalDistance = (totalInSeconds / currentSegment.timespan_seconds) * distance;
+            double distance = Math.Sqrt(Math.Pow(currentSegment.Longitude - prevSegment.Longitude,
+                2) + Math.Pow(currentSegment.Latitude - currentSegment.Latitude, 2));
+            double totalDistance = (totalInSeconds / currentSegment.TimespanSeconds) * distance;
 
             // Perform a linear interpolation in order to determine newXValue and newYValue
-            double newXValue = currentSegment.longitude - (totalDistance * (
-                currentSegment.longitude - prevSegment.longitude) / distance);
-            double newYValue = currentSegment.latitude - (totalDistance * (
-                currentSegment.latitude - prevSegment.latitude) / distance);
+            double newXValue = currentSegment.Longitude - (totalDistance * (
+                currentSegment.Longitude - prevSegment.Longitude) / distance);
+            double newYValue = currentSegment.Latitude - (totalDistance * (
+                currentSegment.Latitude - prevSegment.Latitude) / distance);
 
             // return the new values created
             return new KeyValuePair<double, double>(newXValue, newYValue);
