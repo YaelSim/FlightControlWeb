@@ -13,7 +13,7 @@ namespace FlightControlWeb.Controllers
     [ApiController]
     public class FlightsController : ControllerBase
     {
-        private IFlightPlanManager service;
+        private readonly IFlightPlanManager service;
         public FlightsController(IFlightPlanManager flightPlanManager)
         {
             this.service = flightPlanManager;

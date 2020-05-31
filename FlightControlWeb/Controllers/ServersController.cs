@@ -14,8 +14,8 @@ namespace FlightControlWeb.Controllers
     public class ServersController : ControllerBase
     {
         //private readonly ServersMamager service = new ServersMamager();
-        private IMemoryCache cache;
-        private IServerManager service;
+        private readonly IMemoryCache cache;
+        private readonly IServerManager service;
 
         public ServersController(IMemoryCache c)
         {
