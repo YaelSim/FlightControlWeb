@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -14,9 +15,11 @@ namespace FlightControlWeb.Models
         private readonly Dictionary<string, KeyValuePair<bool, FlightPlan>> flightPlans =
             new Dictionary<string, KeyValuePair<bool, FlightPlan>>();
         private readonly IServerManager serverManager;
-        public FlightPlanManager(IServerManager sm)
+        private IMemoryCache cache;
+        public FlightPlanManager(IServerManager sm, IMemoryCache c)
         {
             serverManager = sm;
+            cache = c;
         }
         public async Task<IEnumerable<Flight>> GetAllFlightsRelative(DateTime dateTime)
         {
@@ -25,7 +28,8 @@ namespace FlightControlWeb.Models
             allFlights.AddRange(internalFlights);
 
             string restOfUrl = "/api/Flights?relative_to=";
-            IEnumerable<Server> externalServers = serverManager.GetAllServers();
+            //IEnumerable<Server> externalServers = serverManager.GetAllServers();
+            var externalServers = ((IEnumerable<Server>)cache.Get("serversList")).ToList();
 
             //For each server on the ServerManager
             foreach (Server currServer in externalServers)

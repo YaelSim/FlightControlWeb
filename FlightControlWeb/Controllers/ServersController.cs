@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using FlightControlWeb.Models;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace FlightControlWeb.Controllers
 {
@@ -12,7 +13,15 @@ namespace FlightControlWeb.Controllers
     [ApiController]
     public class ServersController : ControllerBase
     {
-        private readonly ServersMamager service = new ServersMamager();
+        //private readonly ServersMamager service = new ServersMamager();
+        private IMemoryCache cache;
+        private IServerManager service;
+
+        public ServersController(IMemoryCache c)
+        {
+            cache = c;
+            service = new ServersMamager(cache);
+        }
 
         //GET: /api/servers
         [HttpGet]

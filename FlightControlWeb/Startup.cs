@@ -4,9 +4,11 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System.Collections.Generic;
 using System.Net.Mime;
 
 namespace FlightControlWeb
@@ -60,10 +62,11 @@ namespace FlightControlWeb
 
             services.AddSingleton<IFlightPlanManager, FlightPlanManager>();
             services.AddSingleton<IServerManager, ServersMamager>();
+            services.AddMemoryCache();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IMemoryCache cache)
         {
             if (env.IsDevelopment())
             {
@@ -96,6 +99,9 @@ namespace FlightControlWeb
                     spa.UseReactDevelopmentServer(npmScript: "start");
                 }
             });
+
+            IEnumerable<Server> serversList = new List<Server>();
+            cache.Set("serversList", serversList);
         }
     }
 }
