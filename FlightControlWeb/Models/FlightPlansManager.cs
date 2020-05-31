@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -55,15 +56,21 @@ namespace FlightControlWeb.Models
                 }
 
                 string bodyOfReturned = await returned.Content.ReadAsStringAsync();
-                externalFlightsList = Newtonsoft.Json.JsonConvert.
-                    DeserializeObject<IEnumerable<Flight>>(bodyOfReturned);
+                //externalFlightsList = Newtonsoft.Json.JsonConvert.
+                //    DeserializeObject<IEnumerable<Flight>>(bodyOfReturned);
+
+                //
+                var settings = new JsonSerializerSettings();
+                settings.ContractResolver = new FlightContractResolver();
+                externalFlightsList = JsonConvert.DeserializeObject<Flight[]>(bodyOfReturned, settings);
+                //
 
                 foreach (Flight curr in externalFlightsList) {
                     curr.IsExternal = true;
                     allFlights.Add(curr);
                 }
 
-                GetExternalServerFlightPlans(externalFlightsList, httpClient, currServer.ServerURL);
+                await GetExternalServerFlightPlans(externalFlightsList, httpClient, currServer.ServerURL);
 
                 //Dispose the HttpClient to prevent a leak
                 httpClient.Dispose();
@@ -74,20 +81,35 @@ namespace FlightControlWeb.Models
 
         //Maybe this method should return  Task<IEnumerable<FlightPlan>> ??? ***************
         //Foreach Flight object on the flights list, get the matching flight plan.
-        public async void GetExternalServerFlightPlans(
+        public async Task GetExternalServerFlightPlans(
             IEnumerable<Flight> flightsList, HttpClient httpClient, string serverUrl)
         {
             foreach (Flight flight in flightsList)
             {
                 string id = flight.FlightId;
                 HttpResponseMessage returned = await httpClient.GetAsync(serverUrl + 
-                    "/api/FlightPlan/" + id);
+                    "/api/FlightPlan/" + id.ToString());
+                //var returned = await httpClient.GetStringAsync(serverUrl + "/api/FlightPlan/" + id.ToString());
                 string bodyOfReturned = await returned.Content.ReadAsStringAsync();
-                FlightPlan flightPlan = Newtonsoft.Json.JsonConvert.DeserializeObject<FlightPlan>(
-                    bodyOfReturned);
+
+                //FlightPlan flightPlan = Newtonsoft.Json.JsonConvert.DeserializeObject<FlightPlan>(
+                //    bodyOfReturned);
+
+                var settings = new JsonSerializerSettings();
+                settings.ContractResolver = new FlightContractResolver();
+                FlightPlan flightPlan = JsonConvert.DeserializeObject<FlightPlan>(bodyOfReturned, settings);
+                //FlightPlan flightPlan = JsonConvert.DeserializeObject<FlightPlan>(returned, settings);
 
                 //Add this flight plan to the dictionary.
                 //It was already given a uniqueId (its' origin is from another server...)
+
+                bool gotValue = flightPlans.TryGetValue(id, out KeyValuePair<bool,
+                FlightPlan> output);
+
+                if (gotValue)
+                {
+                    flightPlans.Remove(id);
+                }
                 flightPlans.Add(id, new KeyValuePair<bool, FlightPlan>(true, flightPlan));
             }
         }
