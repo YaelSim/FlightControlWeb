@@ -289,6 +289,11 @@ namespace FlightControlWeb.Models
             currentSegment = flightPlan.Segments[currentSegmentIndex];
             double distance = Math.Sqrt(Math.Pow(currentSegment.Longitude - prevSegment.Longitude,
                 2) + Math.Pow(currentSegment.Latitude - currentSegment.Latitude, 2));
+            if (distance == 0)
+            {
+                return new KeyValuePair<double, double>(currentSegment.Longitude,
+                    currentSegment.Latitude);
+            }
             double totalDistance = (totalInSeconds / currentSegment.TimespanSeconds) * distance;
 
             // Perform a linear interpolation in order to determine newXValue and newYValue
