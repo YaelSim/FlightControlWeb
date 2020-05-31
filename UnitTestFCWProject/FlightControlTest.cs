@@ -71,7 +71,7 @@ namespace UnitTestFCWProject
         }
 
         [TestMethod]
-        public void checkTotalTimeOfFlight()
+        public void CheckTotalTimeOfFlight()
         {
             // Create Segments list
             IServerManager servers = new ServersMamager();
@@ -115,7 +115,7 @@ namespace UnitTestFCWProject
         }
 
         [TestMethod]
-        public void checkFlightCurrentSegment()
+        public void CheckFlightCurrentSegment()
         {
             // Create Segments list
             IServerManager servers = new ServersMamager();
