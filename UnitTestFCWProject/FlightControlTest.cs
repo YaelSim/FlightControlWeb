@@ -31,5 +31,11 @@ namespace UnitTestFCWProject
             Assert.AreEqual(expected.ServerId, actual.ServerId);
             Assert.AreEqual(expected.ServerURL, actual.ServerURL);
         }
+
+        [TestMethod]
+        public void CheckRemoveFlightPlan ()
+        {
+
+        }
     }
 }
