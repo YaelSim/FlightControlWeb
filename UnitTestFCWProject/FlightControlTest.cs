@@ -12,13 +12,14 @@ namespace UnitTestFCWProject
     [TestClass]
     public class FlightControlTest
     {
+        // This method checks if the flight is active in the given date time.
         [TestMethod]
         public void CheckIfFlightActive ()
         {
             // Create Flight plans
             IMemoryCache cache = new MemoryCache(new MemoryCacheOptions());
             IServerManager servers = new ServersMamager(cache);
-            FlightPlanManager flightPlanManager = new FlightPlanManager(servers, cache);
+            FlightPlanManager flightPlanManager = new FlightPlanManager(servers);
 
             // time of the flight
             string exampleA = "2020-05-31T00:00:00Z";
@@ -72,13 +73,14 @@ namespace UnitTestFCWProject
             Assert.AreEqual(expectedB, actualB);
         }
 
+        // This method checks the total flight time by segments list.
         [TestMethod]
         public void CheckTotalTimeOfFlight()
         {
             // Create Segments list
             IMemoryCache cache = new MemoryCache(new MemoryCacheOptions());
             IServerManager servers = new ServersMamager(cache);
-            FlightPlanManager flightPlanManager = new FlightPlanManager(servers, cache);
+            FlightPlanManager flightPlanManager = new FlightPlanManager(servers);
             List<Segment> segments = new List<Segment>
             {
                 new Segment
@@ -117,13 +119,14 @@ namespace UnitTestFCWProject
             Assert.AreEqual(expected, actual);
         }
 
+        // This method checks witch segment of the flightws path it is now.
         [TestMethod]
         public void CheckFlightCurrentSegment()
         {
-            // Create Segments list
+            //* Create Segments list
             IMemoryCache cache = new MemoryCache(new MemoryCacheOptions());
             IServerManager servers = new ServersMamager(cache);
-            FlightPlanManager flightPlanManager = new FlightPlanManager(servers, cache);
+            FlightPlanManager flightPlanManager = new FlightPlanManager(servers);
             List<Segment> segments = new List<Segment>
             {
                 new Segment
@@ -175,52 +178,57 @@ namespace UnitTestFCWProject
             Assert.AreEqual(expected, actual);
         }
 
+        // This method checks if the right server was removed from the list.
         [TestMethod]
         public void CheckRemoveServer()
         {
             // Create servers list
             IMemoryCache cache = new MemoryCache(new MemoryCacheOptions());
-            IServerManager serversList = new ServersMamager(cache);
+            List<Server> serversList = new List<Server>();
             Server serverA = new Server { ServerId = "1234", ServerURL = "AAA1234" };
             Server serverB = new Server { ServerId = "5678", ServerURL = "BBB5678" };
             Server serverC = new Server { ServerId = "9101", ServerURL = "CCC9101" };
-            serversList.AddServer(serverA);
-            serversList.AddServer(serverB);
-            serversList.AddServer(serverC);
+            serversList.Add(serverA);
+            serversList.Add(serverB);
+            serversList.Add(serverC);
+
+            cache.Set("serversList", serversList);
+            IServerManager servers = new ServersMamager(cache);
 
             // What the methot need to return
             Server expected = new Server { ServerId = "5678", ServerURL = "BBB5678" };
 
             //Remove serverB
-            Server actual = serversList.RemoveServer("5678");
+            Server actual = servers.RemoveServer("5678");
 
             // Test
             Assert.AreEqual(expected.ServerId, actual.ServerId);
             Assert.AreEqual(expected.ServerURL, actual.ServerURL);
         }
 
+        // This method checks if the ServerManager returns all the list completle.
         [TestMethod]
         public void CheckReturnedServersList()
         {
             // Create servers list
             IMemoryCache cache = new MemoryCache(new MemoryCacheOptions());
-            IServerManager serversList = new ServersMamager(cache);
+            List<Server> serversList = new List<Server>();
             Server serverA = new Server { ServerId = "1234", ServerURL = "AAA1234" };
             Server serverB = new Server { ServerId = "5678", ServerURL = "BBB5678" };
             Server serverC = new Server { ServerId = "9101", ServerURL = "CCC9101" };
-            serversList.AddServer(serverA);
-            serversList.AddServer(serverB);
-            serversList.AddServer(serverC);
+            serversList.Add(serverA);
+            serversList.Add(serverB);
+            serversList.Add(serverC);
+
+            cache.Set("serversList", serversList);
+            IServerManager servers = new ServersMamager(cache);
 
             // What the methot need to return
             int expectedCount = 3;
-            List<Server> expectedList = new List<Server>();
-            expectedList.Add(serverA);
-            expectedList.Add(serverB);
-            expectedList.Add(serverC);
+            List<Server> expectedList = serversList;
 
             //Get list of all the servers
-            IEnumerable<Server> actual = serversList.GetAllServers();
+            IEnumerable<Server> actual = servers.GetAllServers();
 
             // Test
             Assert.AreEqual(expectedCount, actual.Count());

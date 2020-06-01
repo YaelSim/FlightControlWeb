@@ -16,13 +16,6 @@ namespace FlightControlWeb.Models
         private readonly Dictionary<string, KeyValuePair<bool, FlightPlan>> flightPlans =
             new Dictionary<string, KeyValuePair<bool, FlightPlan>>();
         private readonly IServerManager serverManager;
-
-        //private IMemoryCache cache;
-        /*public FlightPlanManager(IServerManager sm, IMemoryCache c)
-        {
-            serverManager = sm;
-            cache = c;
-        }*/
         public FlightPlanManager(IServerManager sm)
         {
             serverManager = sm;
