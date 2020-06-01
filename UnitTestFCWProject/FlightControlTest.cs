@@ -5,6 +5,7 @@ using FlightControlWeb.Models;
 using System.Collections.Generic;
 using System;
 using System.Linq;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace UnitTestFCWProject
 {
@@ -15,8 +16,9 @@ namespace UnitTestFCWProject
         public void CheckIfFlightActive ()
         {
             // Create Flight plans
-            IServerManager servers = new ServersMamager();
-            FlightPlanManager flightPlanManager = new FlightPlanManager(servers);
+            IMemoryCache cache = new MemoryCache(new MemoryCacheOptions());
+            IServerManager servers = new ServersMamager(cache);
+            FlightPlanManager flightPlanManager = new FlightPlanManager(servers, cache);
 
             // time of the flight
             string exampleA = "2020-05-31T00:00:00Z";
@@ -74,8 +76,9 @@ namespace UnitTestFCWProject
         public void CheckTotalTimeOfFlight()
         {
             // Create Segments list
-            IServerManager servers = new ServersMamager();
-            FlightPlanManager flightPlanManager = new FlightPlanManager(servers);
+            IMemoryCache cache = new MemoryCache(new MemoryCacheOptions());
+            IServerManager servers = new ServersMamager(cache);
+            FlightPlanManager flightPlanManager = new FlightPlanManager(servers, cache);
             List<Segment> segments = new List<Segment>
             {
                 new Segment
@@ -118,8 +121,9 @@ namespace UnitTestFCWProject
         public void CheckFlightCurrentSegment()
         {
             // Create Segments list
-            IServerManager servers = new ServersMamager();
-            FlightPlanManager flightPlanManager = new FlightPlanManager(servers);
+            IMemoryCache cache = new MemoryCache(new MemoryCacheOptions());
+            IServerManager servers = new ServersMamager(cache);
+            FlightPlanManager flightPlanManager = new FlightPlanManager(servers, cache);
             List<Segment> segments = new List<Segment>
             {
                 new Segment
@@ -175,7 +179,8 @@ namespace UnitTestFCWProject
         public void CheckRemoveServer()
         {
             // Create servers list
-            IServerManager serversList = new ServersMamager();
+            IMemoryCache cache = new MemoryCache(new MemoryCacheOptions());
+            IServerManager serversList = new ServersMamager(cache);
             Server serverA = new Server { ServerId = "1234", ServerURL = "AAA1234" };
             Server serverB = new Server { ServerId = "5678", ServerURL = "BBB5678" };
             Server serverC = new Server { ServerId = "9101", ServerURL = "CCC9101" };
@@ -198,7 +203,8 @@ namespace UnitTestFCWProject
         public void CheckReturnedServersList()
         {
             // Create servers list
-            IServerManager serversList = new ServersMamager();
+            IMemoryCache cache = new MemoryCache(new MemoryCacheOptions());
+            IServerManager serversList = new ServersMamager(cache);
             Server serverA = new Server { ServerId = "1234", ServerURL = "AAA1234" };
             Server serverB = new Server { ServerId = "5678", ServerURL = "BBB5678" };
             Server serverC = new Server { ServerId = "9101", ServerURL = "CCC9101" };
