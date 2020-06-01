@@ -38,14 +38,27 @@ namespace FlightControlWeb.Controllers
                     return service.GetInternalFlightsRelative(result);
                 }
             }
-            catch (HttpResponseException hre)
+            catch (HttpResponseException e)
             {
-                //return StatusCode(hre.Status);
-                return null;
-            } catch (FormatException)
+                throw e;
+            }
+            catch (FormatException)
             {
-                //return BadRequest();
-                return null;
+                HttpResponseException hre = new HttpResponseException
+                {
+                    Status = 422,
+                    Value = "Unable to Follow Request due to Semantic DateTime Errors"
+                };
+                throw hre;
+            }
+            catch (Exception)
+            {
+                HttpResponseException hre = new HttpResponseException
+                {
+                    Status = 400,
+                    Value = "Failed Getting Flights. Try Again."
+                };
+                throw hre;
             }
 
         }
@@ -57,7 +70,12 @@ namespace FlightControlWeb.Controllers
             FlightPlan found = service.RemoveFlightPlan(id);
             if (found == null)
             {
-                return NotFound();
+                HttpResponseException hre = new HttpResponseException
+                {
+                    Status = 404,
+                    Value = "FlightPlan Cannot Be Removed, Since It Was Not Found"
+                };
+                throw hre;
             }
             else
             {

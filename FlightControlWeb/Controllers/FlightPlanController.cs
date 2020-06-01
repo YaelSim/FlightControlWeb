@@ -15,14 +15,22 @@ namespace FlightControlWeb.Controllers
         private readonly IFlightPlanManager service;
         public FlightPlanController(IFlightPlanManager flightPlanManager)
         {
-            this.service = flightPlanManager;
-
+            service = flightPlanManager;
         }
 
         //POST: /api/FlightPlan
         [HttpPost]
         public FlightPlan AddFlightPlan([FromBody] FlightPlan fp)
         {
+            if ((fp == null) || (fp.CompanyName == null))
+            {
+                HttpResponseException hre = new HttpResponseException
+                {
+                    Status = 400,
+                    Value = "FlightPlan Cannot Be Added - Metadata Doesn't Meet Concerns."
+                };
+                throw hre;
+            }
             service.AddFlightPlan(fp);
             return fp;
         }
@@ -31,7 +39,19 @@ namespace FlightControlWeb.Controllers
         [HttpGet("{id}")]
         public FlightPlan GetFlightPlanByUniqueId(string id)
         {
-            return service.GetFlightPlanById(id);
+            FlightPlan found = service.GetFlightPlanById(id);
+            if (found == null)
+            {
+                HttpResponseException hre = new HttpResponseException
+                {
+                    Status = 404,
+                    Value = "FlightPlan Was Not Found"
+                };
+                throw hre;
+            } else
+            {
+                return found;
+            }
         }
     }
 }
