@@ -34,6 +34,15 @@ namespace FlightControlWeb.Controllers
         [HttpPost]
         public Server AddServer([FromBody] Server s)
         {
+            if (s == null)
+            {
+                HttpResponseException hre = new HttpResponseException
+                {
+                    Status = 400,
+                    Value = "Server Cannot Be Added - Metadata Doesn't Meet Concerns."
+                };
+                throw hre;
+            }
             service.AddServer(s);
             return s;
         }
@@ -45,7 +54,12 @@ namespace FlightControlWeb.Controllers
             Server found = service.RemoveServer(id);
             if (found == null)
             {
-                return NotFound();
+                HttpResponseException hre = new HttpResponseException
+                {
+                    Status = 404,
+                    Value = "Server Cannot Be Removed, Since It Was Not Found"
+                };
+                throw hre;
             } else
             {
                 return found;

@@ -23,6 +23,28 @@ namespace FlightControlWeb.Controllers
                 };
                 context.ExceptionHandled = true;
             }
+            /*if (context.Exception is ArgumentNullException)
+            {
+                context.Result = new BadRequestObjectResult("Bad Request. Try Again.");
+                context.ExceptionHandled = true;
+            }
+            if (context.Exception is ArgumentOutOfRangeException)
+            {
+                context.Result = new BadRequestObjectResult(
+                    "Given Information is Out of Range. Try Again.");
+                context.ExceptionHandled = true;
+            }
+            if (context.Exception is FormatException)
+            {
+                context.Result = new ObjectResult("Wrong DateTime Format. Try Again.");
+                context.ExceptionHandled = true;
+            }
+            if (context.Exception is InvalidOperationException)
+            {
+                context.Result = new BadRequestObjectResult(
+                    "Bad Request - Data Does Not Exist In Current Context");
+                context.ExceptionHandled = true;
+            }*/
         }
     }
 }

@@ -44,7 +44,6 @@ namespace FlightControlWeb.Models
                 {
                     Controllers.HttpResponseException hre = new Controllers.HttpResponseException
                     {
-                        //StatusCode = returned.StatusCode,
                         Status = (int)returned.StatusCode,
                         Value = "External Server Response Unsuccessful"
                     };
@@ -82,6 +81,18 @@ namespace FlightControlWeb.Models
                 string id = flight.FlightId;
                 HttpResponseMessage returned = await httpClient.GetAsync(serverUrl + 
                     "/api/FlightPlan/" + id.ToString());
+
+                //Make sure that the returned response was successful
+                if (!returned.IsSuccessStatusCode)
+                {
+                    Controllers.HttpResponseException hre = new Controllers.HttpResponseException
+                    {
+                        Status = (int)returned.StatusCode,
+                        Value = "External Server Response Unsuccessful"
+                    };
+                    throw hre;
+                }
+
                 string bodyOfReturned = await returned.Content.ReadAsStringAsync();
 
                 var settings = new JsonSerializerSettings
@@ -143,7 +154,7 @@ namespace FlightControlWeb.Models
         }
         public void AddFlightPlan(FlightPlan flightPlan)
         {
-            string uniqueId = this.GenerateHashCodeOfId(flightPlan);
+            string uniqueId = GenerateHashCodeOfId(flightPlan);
             bool isExternal = false;
             flightPlans.Add(uniqueId, new KeyValuePair<bool, FlightPlan>(isExternal, flightPlan));
         }
@@ -159,7 +170,6 @@ namespace FlightControlWeb.Models
             }
             else
             {
-                //throw new Exception("No flight found");
                 Debug.WriteLine("flightPlan isn't found.\n");
                 return null;
             }

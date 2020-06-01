@@ -4,6 +4,7 @@ import FlightDetails from "./components/FlightDetails";
 import FlightsMap from "./components/FlightsMap.js";
 import { useToasts } from 'react-toast-notifications'
 import request from "./utils/request";
+import './custom.css';
 
 const flightListStyles = {
     height: "100vh",
