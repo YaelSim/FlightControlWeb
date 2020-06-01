@@ -16,11 +16,16 @@ namespace FlightControlWeb.Models
         private readonly Dictionary<string, KeyValuePair<bool, FlightPlan>> flightPlans =
             new Dictionary<string, KeyValuePair<bool, FlightPlan>>();
         private readonly IServerManager serverManager;
-        private IMemoryCache cache;
-        public FlightPlanManager(IServerManager sm, IMemoryCache c)
+
+        //private IMemoryCache cache;
+        /*public FlightPlanManager(IServerManager sm, IMemoryCache c)
         {
             serverManager = sm;
             cache = c;
+        }*/
+        public FlightPlanManager(IServerManager sm)
+        {
+            serverManager = sm;
         }
         public async Task<IEnumerable<Flight>> GetAllFlightsRelative(DateTime dateTime)
         {
@@ -29,8 +34,8 @@ namespace FlightControlWeb.Models
             allFlights.AddRange(internalFlights);
 
             string restOfUrl = "/api/Flights?relative_to=";
-            //IEnumerable<Server> externalServers = serverManager.GetAllServers();
-            var externalServers = ((IEnumerable<Server>)cache.Get("serversList")).ToList();
+            //var externalServers = ((IEnumerable<Server>)cache.Get("serversList")).ToList();
+            var externalServers = serverManager.GetAllServers();
 
             //For each server on the ServerManager
             foreach (Server currServer in externalServers)
@@ -42,8 +47,6 @@ namespace FlightControlWeb.Models
                         + restOfUrl + dateTime.ToString("yyyy-MM-ddTHH:mm:ssZ"));
 
                 //Make sure that the returned response was successful
-                //returned.EnsureSuccessStatusCode();
-
                 if (!returned.IsSuccessStatusCode)
                 {
                     Controllers.HttpResponseException hre = new Controllers.HttpResponseException
@@ -56,14 +59,12 @@ namespace FlightControlWeb.Models
                 }
 
                 string bodyOfReturned = await returned.Content.ReadAsStringAsync();
-                //externalFlightsList = Newtonsoft.Json.JsonConvert.
-                //    DeserializeObject<IEnumerable<Flight>>(bodyOfReturned);
 
-                //
-                var settings = new JsonSerializerSettings();
-                settings.ContractResolver = new FlightContractResolver();
+                var settings = new JsonSerializerSettings
+                {
+                    ContractResolver = new FlightContractResolver()
+                };
                 externalFlightsList = JsonConvert.DeserializeObject<Flight[]>(bodyOfReturned, settings);
-                //
 
                 foreach (Flight curr in externalFlightsList) {
                     curr.IsExternal = true;
@@ -79,7 +80,6 @@ namespace FlightControlWeb.Models
             return allFlights;
         }
 
-        //Maybe this method should return  Task<IEnumerable<FlightPlan>> ??? ***************
         //Foreach Flight object on the flights list, get the matching flight plan.
         public async Task GetExternalServerFlightPlans(
             IEnumerable<Flight> flightsList, HttpClient httpClient, string serverUrl)
@@ -89,22 +89,18 @@ namespace FlightControlWeb.Models
                 string id = flight.FlightId;
                 HttpResponseMessage returned = await httpClient.GetAsync(serverUrl + 
                     "/api/FlightPlan/" + id.ToString());
-                //var returned = await httpClient.GetStringAsync(serverUrl + "/api/FlightPlan/" + id.ToString());
                 string bodyOfReturned = await returned.Content.ReadAsStringAsync();
 
-                //FlightPlan flightPlan = Newtonsoft.Json.JsonConvert.DeserializeObject<FlightPlan>(
-                //    bodyOfReturned);
-
-                var settings = new JsonSerializerSettings();
-                settings.ContractResolver = new FlightContractResolver();
+                var settings = new JsonSerializerSettings
+                {
+                    ContractResolver = new FlightContractResolver()
+                };
                 FlightPlan flightPlan = JsonConvert.DeserializeObject<FlightPlan>(bodyOfReturned, settings);
-                //FlightPlan flightPlan = JsonConvert.DeserializeObject<FlightPlan>(returned, settings);
 
                 //Add this flight plan to the dictionary.
                 //It was already given a uniqueId (its' origin is from another server...)
 
-                bool gotValue = flightPlans.TryGetValue(id, out KeyValuePair<bool,
-                FlightPlan> output);
+                bool gotValue = flightPlans.TryGetValue(id, out _);
 
                 if (gotValue)
                 {
@@ -280,7 +276,7 @@ namespace FlightControlWeb.Models
                 //If the given totalTime > curr's timespan (measured in seconds)
                 if (totalTime > curr.TimespanSeconds)
                 {
-                    totalTime = totalTime - curr.TimespanSeconds;
+                    totalTime -= curr.TimespanSeconds;
                     count += 1;
                     continue;
                 }

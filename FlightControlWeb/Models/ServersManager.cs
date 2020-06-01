@@ -10,7 +10,7 @@ namespace FlightControlWeb.Models
     public class ServersMamager : IServerManager
     {
         private readonly List<Server> serversList = new List<Server>();
-        private IMemoryCache cache;
+        private readonly IMemoryCache cache;
 
         public ServersMamager(IMemoryCache c)
         {
@@ -21,7 +21,7 @@ namespace FlightControlWeb.Models
         {
             var fromCache = ((IEnumerable<Server>)cache.Get("serversList")).ToList();
             //             cache.Set("serversList", fromCache);
-            return serversList;
+            return fromCache;
         }
 
         public void AddServer(Server server)

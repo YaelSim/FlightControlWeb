@@ -87,10 +87,12 @@ export default function FlightList(props) {
                                 </td>
                             </tr>
                         ))}
-                    {props.flightd && props.flights
+                    {props.flights && props.flights
                         .filter(flight => flight.is_external)
                         .map(flight => (
-                            <tr key={flight.flight_id} onClick={() => clickHandler(flight.flight_id)}>
+                            <tr key={flight.flight_id} onClick={() => clickHandler(flight.flight_id)}
+                                className={`${styles['row-hover']} ${flight.flight_id === props.flightId ? styles['selected-flight'] : ''}`}
+                            >
                                 <th scope="row">{flight.flight_id}</th>
                                 <td>{flight.company_name}</td>
                                 <td>Yes</td>
