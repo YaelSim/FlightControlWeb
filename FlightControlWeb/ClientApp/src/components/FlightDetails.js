@@ -39,7 +39,7 @@ export default function FlightDetails(props) {
                 <div className="col-3">{props.flightPlan ? props.flightPlan.passengers : "-"}</div>
             </div>
             <div className="row mt-3">
-                <div className="col-3">Destionation: </div>
+                <div className="col-3">Destination: </div>
                 <div className="col-3">{props.flightPlan
                     ? props.flightPlan.segments[props.flightPlan.segments.length - 1].latitude : "-"}
                     {props.flightPlan
