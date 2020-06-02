@@ -12,5 +12,6 @@ namespace FlightControlWeb.Models
         public void AddFlightPlan(FlightPlan flightPlan);
         public FlightPlan GetFlightPlanById(string uniqueId);
         public FlightPlan RemoveFlightPlan(string uniqueId);
+        public bool CheckFlightPlanProperties(FlightPlan flightPlan);
     }
 }

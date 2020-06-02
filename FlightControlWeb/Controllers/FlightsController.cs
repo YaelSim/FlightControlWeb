@@ -16,7 +16,7 @@ namespace FlightControlWeb.Controllers
         private readonly IFlightPlanManager service;
         public FlightsController(IFlightPlanManager flightPlanManager)
         {
-            this.service = flightPlanManager;
+            service = flightPlanManager;
         }
 
         // GET: /api/Flights?relative_to=<DATE_TIME>&sync_all   V   GET: /api/Flights?relative_to=<DATE_TIME>

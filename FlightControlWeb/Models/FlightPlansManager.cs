@@ -56,20 +56,39 @@ namespace FlightControlWeb.Models
                 {
                     ContractResolver = new FlightContractResolver()
                 };
-                externalFlightsList = JsonConvert.DeserializeObject<Flight[]>(bodyOfReturned, settings);
+                externalFlightsList = JsonConvert.DeserializeObject<Flight[]>(
+                    bodyOfReturned, settings);
 
-                foreach (Flight curr in externalFlightsList) {
-                    curr.IsExternal = true;
-                    allFlights.Add(curr);
-                }
+                //Getting only flights that meet the concerns dictated.
+                IEnumerable<Flight> properFlightsList = GetProperFlightsList(externalFlightsList);
+                allFlights.AddRange(properFlightsList);
 
-                await GetExternalServerFlightPlans(externalFlightsList, httpClient, currServer.ServerURL);
+                await GetExternalServerFlightPlans(
+                    externalFlightsList, httpClient, currServer.ServerURL);
 
                 //Dispose the HttpClient to prevent a leak
                 httpClient.Dispose();
             }
             
             return allFlights;
+        }
+
+        private IEnumerable<Flight> GetProperFlightsList(IEnumerable<Flight> externalFlightsList)
+        {
+            List<Flight> properFlightsList = new List<Flight>();
+            foreach (Flight flight in externalFlightsList)
+            {
+                //Check if the given flight properties meet the concerns. If not - IGNORE IT.
+                bool validFlight = CheckFlightProperties(flight);
+                if (!validFlight)
+                {
+                    continue;
+                }
+
+                flight.IsExternal = true;
+                properFlightsList.Add(flight);
+            }
+            return properFlightsList;
         }
 
         //Foreach Flight object on the flights list, get the matching flight plan.
@@ -100,6 +119,13 @@ namespace FlightControlWeb.Models
                     ContractResolver = new FlightContractResolver()
                 };
                 FlightPlan flightPlan = JsonConvert.DeserializeObject<FlightPlan>(bodyOfReturned, settings);
+
+                //Check if the given flightplan properties meet the concerns.
+                bool valid = CheckFlightPlanProperties(flightPlan);
+                if (!valid)
+                {
+                    continue;
+                }
 
                 //Add this flight plan to the dictionary.
                 //It was already given a uniqueId (its' origin is from another server...)
@@ -329,6 +355,114 @@ namespace FlightControlWeb.Models
 
             // return the new values created
             return new KeyValuePair<double, double>(newXValue, newYValue);
+        }
+
+        //Given a flightplan, determine whether its properties meet the concerns
+        public bool CheckFlightPlanProperties(FlightPlan flightPlan)
+        {
+            if (flightPlan == null)
+            {
+                return false;
+            }
+            if ((flightPlan.Passengers < 0) || (flightPlan.Passengers > Int32.MaxValue)) {
+                return false;
+            }
+            if ((flightPlan.InitialLocation.Latitude > 90) || (
+                flightPlan.InitialLocation.Latitude < -90)) {
+                return false;
+            }
+            if ((flightPlan.InitialLocation.Longitude > 180) || (
+                flightPlan.InitialLocation.Longitude < -180))
+            {
+                return false;
+            }
+            DateTime dt = flightPlan.InitialLocation.DateTime;
+            if (dt == DateTime.MinValue)
+            {
+                return false;
+            }
+            if (!IsDateTimeWithinRange(dt))
+            {
+                return false;
+            }
+            if (flightPlan.CompanyName == null)
+            {
+                return false;
+            }
+            foreach (Segment segment in flightPlan.Segments)
+            {
+                if ((segment.Longitude > 180) || (segment.Longitude < -180))
+                {
+                    return false;
+                }
+                if ((segment.Latitude > 90) || (segment.Latitude < -90))
+                {
+                    return false;
+                }
+                if ((segment.TimespanSeconds < 0) || (segment.TimespanSeconds > Double.MaxValue))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        //Given a flight, determine whether its properties meet the concerns
+        private bool CheckFlightProperties(Flight flight)
+        {
+            if (flight == null)
+            {
+                return false;
+            }
+            if (flight.FlightId == null)
+            {
+                return false;
+            }
+            if ((flight.Passengers < 0) || (flight.Passengers > Int32.MaxValue))
+            {
+                return false;
+            }
+            if ((flight.Latitude > 90) || (flight.Latitude < -90))
+            {
+                return false;
+            }
+            if ((flight.Longitude > 180) || (flight.Longitude < -180))
+            {
+                return false;
+            }
+            if (flight.DateTime == DateTime.MinValue)
+            {
+                return false;
+            }
+            if (!IsDateTimeWithinRange(flight.DateTime))
+            {
+                return false;
+            }
+            if (flight.CompanyName == null)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        //Given a dateTime, determine if it's within the possible range.
+        public bool IsDateTimeWithinRange(DateTime toCheck)
+        {
+            //Make sure that toCheck is UTC.
+            toCheck = TimeZoneInfo.ConvertTimeToUtc(toCheck);
+
+            string lowerBoundStr = "0001-01-01T00:00:00Z";
+            DateTime lowBound = DateTime.ParseExact(lowerBoundStr, "yyyy-MM-ddTHH:mm:ssZ",
+                System.Globalization.CultureInfo.InvariantCulture);
+            lowBound = TimeZoneInfo.ConvertTimeToUtc(lowBound);
+
+            string upperBoundStr = "9999-12-31T11:59:59Z";
+            DateTime upBound = DateTime.ParseExact(upperBoundStr, "yyyy-MM-ddTHH:mm:ssZ",
+                System.Globalization.CultureInfo.InvariantCulture);
+            upBound = TimeZoneInfo.ConvertTimeToUtc(upBound);
+
+            bool comparison = toCheck >= lowBound && toCheck <= upBound;
+            return comparison;
         }
     }
 }

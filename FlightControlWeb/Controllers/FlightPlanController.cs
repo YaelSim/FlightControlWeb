@@ -22,7 +22,9 @@ namespace FlightControlWeb.Controllers
         [HttpPost]
         public FlightPlan AddFlightPlan([FromBody] FlightPlan fp)
         {
-            if ((fp == null) || (fp.CompanyName == null))
+            //Check if the given flightplan properties meet the concerns.
+            bool valid = service.CheckFlightPlanProperties(fp);
+            if (!valid)
             {
                 HttpResponseException hre = new HttpResponseException
                 {

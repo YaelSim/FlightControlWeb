@@ -12,7 +12,6 @@ namespace FlightControlWeb.Models
     {
         [JsonProperty, JsonPropertyName("passengers")]
         [Required]
-        [Range(0, Int32.MaxValue, ErrorMessage = "{0} value must be between {1} and {2}")]
         public int Passengers { get; set; }
 
 

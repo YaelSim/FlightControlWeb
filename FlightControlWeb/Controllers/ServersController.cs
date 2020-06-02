@@ -34,7 +34,7 @@ namespace FlightControlWeb.Controllers
         [HttpPost]
         public Server AddServer([FromBody] Server s)
         {
-            if (s == null)
+            if ((s == null) || (s.ServerId == null) || (s.ServerURL == null))
             {
                 HttpResponseException hre = new HttpResponseException
                 {
