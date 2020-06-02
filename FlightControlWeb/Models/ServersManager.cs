@@ -12,15 +12,14 @@ namespace FlightControlWeb.Models
         private readonly List<Server> serversList = new List<Server>();
         private readonly IMemoryCache cache;
 
-        public ServersMamager(IMemoryCache c)
+        public ServersMamager(IMemoryCache cm)
         {
-            this.cache = c;
+            this.cache = cm;
         }
 
         public IEnumerable<Server> GetAllServers()
         {
             var fromCache = ((IEnumerable<Server>)cache.Get("serversList")).ToList();
-            //             cache.Set("serversList", fromCache);
             return fromCache;
         }
 
@@ -35,9 +34,7 @@ namespace FlightControlWeb.Models
         public Server GetServerById(string id)
         {
             var fromCache = ((IEnumerable<Server>)cache.Get("serversList")).ToList();
-
             Server server = fromCache.Where(x => x.ServerId == id).FirstOrDefault();
-            //Server server = serversList.Where(x => x.ServerId == id).FirstOrDefault();
             cache.Set("servers", fromCache);
 
             if (server == null)
@@ -54,8 +51,6 @@ namespace FlightControlWeb.Models
         public Server RemoveServer(string id)
         {
             var fromCache = ((IEnumerable<Server>)cache.Get("serversList")).ToList();
-
-            //Server server = serversList.Where(x => x.ServerId == id).FirstOrDefault();
             Server server = fromCache.Where(x => x.ServerId == id).FirstOrDefault();
             cache.Set("serversList", fromCache);
             if (server == null)
@@ -65,7 +60,6 @@ namespace FlightControlWeb.Models
             }
             else
             {
-                //serversList.Remove(server);
                 fromCache.Remove(server);
                 return server;
             }

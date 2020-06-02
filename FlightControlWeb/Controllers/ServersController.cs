@@ -13,10 +13,10 @@ namespace FlightControlWeb.Controllers
     [ApiController]
     public class ServersController : ControllerBase
     {
-        //private readonly ServersMamager service = new ServersMamager();
         private readonly IMemoryCache cache;
         private readonly IServerManager service;
 
+        // Constructor
         public ServersController(IMemoryCache c)
         {
             cache = c;
@@ -34,6 +34,7 @@ namespace FlightControlWeb.Controllers
         [HttpPost]
         public Server AddServer([FromBody] Server s)
         {
+            // Check if the given server is valid
             if ((s == null) || (s.ServerId == null) || (s.ServerURL == null))
             {
                 HttpResponseException hre = new HttpResponseException
@@ -52,6 +53,7 @@ namespace FlightControlWeb.Controllers
         public ActionResult<Server> RemoveServer(string id)
         {
             Server found = service.RemoveServer(id);
+            // If server was founded and removed, we return it to the client
             if (found == null)
             {
                 HttpResponseException hre = new HttpResponseException

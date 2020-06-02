@@ -14,12 +14,15 @@ namespace FlightControlWeb.Controllers
     public class FlightsController : ControllerBase
     {
         private readonly IFlightPlanManager service;
+
+        // Constructor
         public FlightsController(IFlightPlanManager flightPlanManager)
         {
             service = flightPlanManager;
         }
 
-        // GET: /api/Flights?relative_to=<DATE_TIME>&sync_all   V   GET: /api/Flights?relative_to=<DATE_TIME>
+        // GET: /api/Flights?relative_to=<DATE_TIME>&sync_all   V 
+        // GET: /api/Flights?relative_to=<DATE_TIME>
         [HttpGet]
         public async Task<IEnumerable<Flight>> GetFlights(
             [FromQuery(Name = "relative_to")] string dateTime)
@@ -28,6 +31,7 @@ namespace FlightControlWeb.Controllers
             try
             {
                 DateTime result = GetDateTimeAccordingfToStr(dateTime);
+                // check the get request
                 bool externalFlightsNeeded = request.Contains("sync_all");
                 if (externalFlightsNeeded)
                 {
@@ -68,6 +72,7 @@ namespace FlightControlWeb.Controllers
         public ActionResult<FlightPlan> DeleteFlightPlan(string id)
         {
             FlightPlan found = service.RemoveFlightPlan(id);
+            // If FlightPlan was founded and removed, we return it to the client
             if (found == null)
             {
                 HttpResponseException hre = new HttpResponseException
@@ -83,6 +88,7 @@ namespace FlightControlWeb.Controllers
             }
         }
 
+        // Convert the date time from the given string to DateTime type.
         private DateTime GetDateTimeAccordingfToStr(string dateTime)
         {
             //May throw an exception.

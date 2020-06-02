@@ -13,6 +13,8 @@ namespace FlightControlWeb.Controllers
     public class FlightPlanController : ControllerBase
     {
         private readonly IFlightPlanManager service;
+
+        // Constructor
         public FlightPlanController(IFlightPlanManager flightPlanManager)
         {
             service = flightPlanManager;
@@ -22,7 +24,7 @@ namespace FlightControlWeb.Controllers
         [HttpPost]
         public FlightPlan AddFlightPlan([FromBody] FlightPlan fp)
         {
-            //Check if the given flightplan properties meet the concerns.
+            // Check if the given flightplan properties meet the concerns.
             bool valid = service.CheckFlightPlanProperties(fp);
             if (!valid)
             {

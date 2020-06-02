@@ -29,7 +29,8 @@ namespace FlightControlWeb.Models
 
         protected override string ResolvePropertyName(string propertyName)
         {
-            var resolved = this.PropertyMappings.TryGetValue(propertyName, out string resolvedName);
+            var resolved = this.PropertyMappings.TryGetValue(propertyName,
+                out string resolvedName);
             return (resolved) ? resolvedName : base.ResolvePropertyName(propertyName);
         }
     }
