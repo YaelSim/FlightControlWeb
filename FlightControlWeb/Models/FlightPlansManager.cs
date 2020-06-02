@@ -184,12 +184,14 @@ namespace FlightControlWeb.Models
 
             return flights;
         }
+
         public void AddFlightPlan(FlightPlan flightPlan)
         {
             string uniqueId = GenerateHashCodeOfId(flightPlan);
             bool isExternal = false;
             flightPlans.Add(uniqueId, new KeyValuePair<bool, FlightPlan>(isExternal, flightPlan));
         }
+
         public FlightPlan GetFlightPlanById(string uniqueId)
         {
             //Search within the local flight plans
@@ -206,6 +208,7 @@ namespace FlightControlWeb.Models
                 return null;
             }
         }
+
         public FlightPlan RemoveFlightPlan(string uniqueId)
         {
             FlightPlan found = GetFlightPlanById(uniqueId);
@@ -216,6 +219,7 @@ namespace FlightControlWeb.Models
             flightPlans.Remove(uniqueId);
             return found;
         }
+
         private string GenerateHashCodeOfId(FlightPlan flightPlan)
         {
             string firstName;
@@ -233,6 +237,7 @@ namespace FlightControlWeb.Models
             string Id = firstName + GetRandomNumbers();
             return Id;
         }
+
         private string GetRandomNumbers()
         {
             Random rand = new Random();
@@ -268,6 +273,7 @@ namespace FlightControlWeb.Models
             }
             return true;
         }
+
         public double GetTotalTimeOfFlight(List<Segment> segmentList)
         {
             double totalTime = 0;
@@ -278,6 +284,7 @@ namespace FlightControlWeb.Models
             }
             return totalTime;
         }
+
         private KeyValuePair<double, double> GetLocation(FlightPlan flightPlan, DateTime dateTime)
         {
             // calculate the time that elapsed so far since the flight has begun
@@ -302,10 +309,10 @@ namespace FlightControlWeb.Models
                 totalDistanceInSeconds);
         }
 
-        //According to the given totalTime, determine in which segment the flight is currently located:
-        //Everytime a segment whose timespan is smaller than totalTime is met, we reduce its' value.
-        //When a segment whose timespan is smaller than (the current or updated) totalTime is met,
-        // we'll return the current count value.
+        //According to the given totalTime, determine in which segment the flight is currently 
+        //located: Everytime a segment whose timespan is smaller than totalTime is met, we reduce
+        //its' value. When a segment whose timespan is smaller than (the current or updated) 
+        //totalTime is met, we'll return the current count value.
         public int GetFlightCurrentSegment(IEnumerable<Segment> segments, double totalTime)
         {
             int count = 0;
