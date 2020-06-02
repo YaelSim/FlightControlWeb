@@ -16,10 +16,13 @@ namespace FlightControlWeb.Models
         private readonly Dictionary<string, KeyValuePair<bool, FlightPlan>> flightPlans =
             new Dictionary<string, KeyValuePair<bool, FlightPlan>>();
         private readonly IServerManager serverManager;
+
         public FlightPlanManager(IServerManager sm)
         {
             serverManager = sm;
         }
+
+        //With sync_all
         public async Task<IEnumerable<Flight>> GetAllFlightsRelative(DateTime dateTime)
         {
             List<Flight> allFlights = new List<Flight>();
@@ -27,13 +30,11 @@ namespace FlightControlWeb.Models
             allFlights.AddRange(internalFlights);
 
             string restOfUrl = "/api/Flights?relative_to=";
-            //var externalServers = ((IEnumerable<Server>)cache.Get("serversList")).ToList();
             var externalServers = serverManager.GetAllServers();
 
             //For each server on the ServerManager
             foreach (Server currServer in externalServers)
             {
-                IEnumerable<Flight> externalFlightsList = null;
                 HttpClient httpClient = new HttpClient();
                 HttpResponseMessage returned;
                 try
@@ -44,15 +45,10 @@ namespace FlightControlWeb.Models
                 {
                     continue;
                 }
+
                 //Make sure that the returned response was successful
                 if (!returned.IsSuccessStatusCode)
                 {
-                    /*Controllers.HttpResponseException hre = new Controllers.HttpResponseException
-                    {
-                        Status = (int)returned.StatusCode,
-                        Value = "External Server Response Unsuccessful"
-                    };
-                    throw hre;*/
                     continue;
                 }
 
@@ -62,8 +58,8 @@ namespace FlightControlWeb.Models
                 {
                     ContractResolver = new FlightContractResolver()
                 };
-                externalFlightsList = JsonConvert.DeserializeObject<Flight[]>(
-                    bodyOfReturned, settings);
+                IEnumerable<Flight> externalFlightsList = JsonConvert.DeserializeObject<Flight[]>(
+                bodyOfReturned, settings);
 
                 //Getting only flights that meet the concerns dictated.
                 IEnumerable<Flight> properFlightsList = GetProperFlightsList(externalFlightsList);
@@ -79,6 +75,7 @@ namespace FlightControlWeb.Models
             return allFlights;
         }
 
+        //Given a list of flights, return a list that contains only the valid flights.
         private IEnumerable<Flight> GetProperFlightsList(IEnumerable<Flight> externalFlightsList)
         {
             List<Flight> properFlightsList = new List<Flight>();
@@ -116,12 +113,6 @@ namespace FlightControlWeb.Models
                 //Make sure that the returned response was successful
                 if (!returned.IsSuccessStatusCode)
                 {
-                    /*Controllers.HttpResponseException hre = new Controllers.HttpResponseException
-                    {
-                        Status = (int)returned.StatusCode,
-                        Value = "External Server Response Unsuccessful"
-                    };
-                    throw hre;*/
                     continue;
                 }
 
@@ -131,7 +122,8 @@ namespace FlightControlWeb.Models
                 {
                     ContractResolver = new FlightContractResolver()
                 };
-                FlightPlan flightPlan = JsonConvert.DeserializeObject<FlightPlan>(bodyOfReturned, settings);
+                FlightPlan flightPlan = JsonConvert.DeserializeObject<FlightPlan>(
+                    bodyOfReturned, settings);
 
                 //Check if the given flightplan properties meet the concerns.
                 bool valid = CheckFlightPlanProperties(flightPlan);
@@ -153,6 +145,7 @@ namespace FlightControlWeb.Models
             }
         }
 
+        //Without sync_all - Internal flights only
         public IEnumerable<Flight> GetInternalFlightsRelative(DateTime dateTime)
         {
             List<Flight> flights = new List<Flight>();
@@ -251,6 +244,9 @@ namespace FlightControlWeb.Models
             }
             return id;
         }
+
+        // Given a flightplan and a datetime, this method returns
+        //  true if the flightplan is active at the given datetime
         public bool IsFlightActive(FlightPlan flightPlan, DateTime dateTime)
         {
             dateTime = dateTime.ToUniversalTime();
@@ -295,8 +291,8 @@ namespace FlightControlWeb.Models
             DateTime initialFlightTime = flightPlan.InitialLocation.DateTime;
             for (int i = 0; i < (currentSegmentIndex + 1); i++)
             {
-                //initialFlightTime.AddSeconds(flightPlan.segments[i].Timespan_seconds);
-                initialFlightTime = initialFlightTime.AddSeconds(flightPlan.Segments[i].TimespanSeconds);
+                initialFlightTime = initialFlightTime.AddSeconds(
+                    flightPlan.Segments[i].TimespanSeconds);
             }
 
             //long ticksSoFar = dateTime.Ticks - initialFlightTime.Ticks;
