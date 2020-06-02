@@ -12,7 +12,7 @@ namespace FlightControlWeb.Models
     {
         [JsonProperty, JsonPropertyName("passengers")]
         [Required]
-        public int Passengers { get; set; }
+        public int Passengers { get; set; } = -1000;
 
 
         [JsonProperty, JsonPropertyName("company_name")]

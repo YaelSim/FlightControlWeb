@@ -17,17 +17,17 @@ namespace FlightControlWeb.Models
 
         [JsonProperty, JsonPropertyName("longitude")]
         [Required]
-        public double Longitude { get; set; }
+        public double Longitude { get; set; } = -1000;
 
 
         [JsonProperty, JsonPropertyName("latitude")]
         [Required]
-        public double Latitude { get; set; }
+        public double Latitude { get; set; } = -1000;
 
 
         [JsonProperty, JsonPropertyName("passengers")]
         [Required]
-        public int Passengers { get; set; }
+        public int Passengers { get; set; } = -1000;
 
 
         [JsonProperty, JsonPropertyName("company_name")]

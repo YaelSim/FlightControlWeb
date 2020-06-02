@@ -42,12 +42,13 @@ namespace FlightControlWeb.Models
                 //Make sure that the returned response was successful
                 if (!returned.IsSuccessStatusCode)
                 {
-                    Controllers.HttpResponseException hre = new Controllers.HttpResponseException
+                    /*Controllers.HttpResponseException hre = new Controllers.HttpResponseException
                     {
                         Status = (int)returned.StatusCode,
                         Value = "External Server Response Unsuccessful"
                     };
-                    throw hre;
+                    throw hre;*/
+                    continue;
                 }
 
                 string bodyOfReturned = await returned.Content.ReadAsStringAsync();
@@ -104,12 +105,13 @@ namespace FlightControlWeb.Models
                 //Make sure that the returned response was successful
                 if (!returned.IsSuccessStatusCode)
                 {
-                    Controllers.HttpResponseException hre = new Controllers.HttpResponseException
+                    /*Controllers.HttpResponseException hre = new Controllers.HttpResponseException
                     {
                         Status = (int)returned.StatusCode,
                         Value = "External Server Response Unsuccessful"
                     };
-                    throw hre;
+                    throw hre;*/
+                    continue;
                 }
 
                 string bodyOfReturned = await returned.Content.ReadAsStringAsync();
