@@ -123,7 +123,7 @@ namespace UnitTestFCWProject
         [TestMethod]
         public void CheckFlightCurrentSegment()
         {
-            //* Create Segments list
+            // Create Segments list
             IMemoryCache cache = new MemoryCache(new MemoryCacheOptions());
             IServerManager servers = new ServersMamager(cache);
             FlightPlanManager flightPlanManager = new FlightPlanManager(servers);
