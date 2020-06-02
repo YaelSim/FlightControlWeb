@@ -35,10 +35,15 @@ namespace FlightControlWeb.Models
             {
                 IEnumerable<Flight> externalFlightsList = null;
                 HttpClient httpClient = new HttpClient();
-
-                HttpResponseMessage returned = await httpClient.GetAsync(currServer.ServerURL
-                        + restOfUrl + dateTime.ToString("yyyy-MM-ddTHH:mm:ssZ"));
-
+                HttpResponseMessage returned;
+                try
+                {
+                    returned = await httpClient.GetAsync(currServer.ServerURL
+                            + restOfUrl + dateTime.ToString("yyyy-MM-ddTHH:mm:ssZ"));
+                } catch (HttpRequestException)
+                {
+                    continue;
+                }
                 //Make sure that the returned response was successful
                 if (!returned.IsSuccessStatusCode)
                 {
@@ -99,9 +104,15 @@ namespace FlightControlWeb.Models
             foreach (Flight flight in flightsList)
             {
                 string id = flight.FlightId;
-                HttpResponseMessage returned = await httpClient.GetAsync(serverUrl + 
-                    "/api/FlightPlan/" + id.ToString());
-
+                HttpResponseMessage returned;
+                try
+                {
+                    returned = await httpClient.GetAsync(serverUrl +
+                        "/api/FlightPlan/" + id.ToString());
+                } catch (HttpRequestException)
+                {
+                    continue;
+                }
                 //Make sure that the returned response was successful
                 if (!returned.IsSuccessStatusCode)
                 {
