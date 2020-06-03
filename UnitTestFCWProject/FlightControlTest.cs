@@ -119,7 +119,7 @@ namespace UnitTestFCWProject
             Assert.AreEqual(expected, actual);
         }
 
-        // This method checks witch segment of the flightws path it is now.
+        // This method checks which segment of the flightws path it is now.
         [TestMethod]
         public void CheckFlightCurrentSegment()
         {
@@ -206,7 +206,7 @@ namespace UnitTestFCWProject
             Assert.AreEqual(expected.ServerURL, actual.ServerURL);
         }
 
-        // This method checks if the ServerManager returns all the list completle.
+        // This method checks if the ServerManager returns all the list completely.
         [TestMethod]
         public void CheckReturnedServersList()
         {
