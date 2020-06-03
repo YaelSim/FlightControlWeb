@@ -1,5 +1,5 @@
 /**
- * 
+ * Fetch request
  * @param {string} url 
  * @param {object} options 
  */

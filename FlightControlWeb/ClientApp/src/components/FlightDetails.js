@@ -6,6 +6,7 @@ export default function FlightDetails(props) {
     const [loading] = useState(false);
     const [arrivalTime, setArrivalTime] = useState();
 
+    // Arrival time calculation
     useEffect(() => {
         if (props.flightPlan) {
             const timeToAdd = props.flightPlan.segments.map(segment => segment.timespan_seconds).reduce((a, b) => a + b, 0);
@@ -15,6 +16,7 @@ export default function FlightDetails(props) {
         }
     }, [props.flightPlan]);
 
+    // Input loader design when needed
     if (loading) {
         return (
             <div className={styles['loader-container']}>
@@ -25,14 +27,15 @@ export default function FlightDetails(props) {
         );
     }
 
+    // Convert the date beautifly
     const dateToString = (date) => {
         return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
     }
 
     return (
+        // Flight details design
         <div className="container">
             <div className="row mt-2">
-
                 <div className="col-3">Company Name: </div>
                 <div className="col-3">{props.flightPlan ? props.flightPlan.company_name : "-"}</div>
                 <div className="col-3">Number Of Passengers: </div>

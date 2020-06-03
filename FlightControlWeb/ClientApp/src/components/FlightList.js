@@ -8,6 +8,7 @@ export default function FlightList(props) {
 
     const { addToast } = useToasts()
 
+    // Send delete request
     async function deleteFlight(flightId) {
         return await request(`/api/Flights/${flightId}`, {
             method: 'DELETE',
@@ -17,10 +18,13 @@ export default function FlightList(props) {
         });
     }
 
+    // If flight index was found, delete the row
     async function deleteRow(flight_id, e) {
         try {
             e.stopPropagation();
             await deleteFlight(flight_id);
+
+            // If the selected line is the line that needs to be deleted, unselect it and delete afterwards
             if (flight_id === props.flightId) {
                 props.setFlightId(null);
             }
@@ -41,11 +45,13 @@ export default function FlightList(props) {
         }
     };
 
+    // When row is clicked, update the flightID
     const clickHandler = flightId => {
         props.setFlightId(flightId);
     };
 
     return (
+        // Flight list design
         <div>
             <FlightLoadingButton />
             <table className="table table-hover">
@@ -62,7 +68,7 @@ export default function FlightList(props) {
                         .filter(flight => !flight.is_external)
                         .map(flight => (
                             <tr key={flight.flight_id} onClick={() => clickHandler(flight.flight_id)}
-                                className={`${styles['row-hover']} ${flight.flight_id === props.flightId ? styles['selected-flight'] : ''}`}
+                            className={`${styles['row-hover']} ${flight.flight_id === props.flightId ? styles['selected-flight'] : ''}`}
                             >
                                 <th scope="row">{flight.flight_id}</th>
                                 <td>{flight.company_name}</td>

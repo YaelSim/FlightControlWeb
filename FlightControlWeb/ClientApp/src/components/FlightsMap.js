@@ -35,21 +35,23 @@ export default function FlightsMap(props) {
         rotationAngle: flight.angle || 0,
     });
 
+    // When a plane is selected, set flightID
     const clickHandler = (flightId) => {
         props.setFlightId(flightId);
     };
 
+    // Draw the path on the map
     useEffect(() => {
         if (props.flightPlan) {
             let pathOne = ['M', [props.flightPlan.initial_location.latitude, props.flightPlan.initial_location.longitude]]
             let pathTwo = props.flightPlan.segments
-                .map((segment) => ('T', [segment.latitude, segment.longitude]))
+                .map((segment) => (('T', [segment.latitude, segment.longitude])))
             pathOne = [...pathOne, ...pathTwo];
             setPath(pathOne);
         }
     }, [props.flightPlan]);
 
-
+    // flightsMap design
     return (
         <Map onClick={() => { props.setFlightId(null) }} center={[31.046051, 34.851612]} zoom={5} style={{ width: "100%", height: "100%", padding: 0, margin: 0 }}>
             <TileLayer

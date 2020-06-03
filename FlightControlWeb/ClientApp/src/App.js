@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import FlightList from "./components/FlightList.js";
 import FlightDetails from "./components/FlightDetails";
 import FlightsMap from "./components/FlightsMap.js";
@@ -18,13 +18,28 @@ export default function App(props) {
     const [flightId, setFlightId] = useState(null);
     const [flights, setFlights] = useState([]);
     const { addToast } = useToasts();
+    const flightIdRef = useRef(null);
 
+    // Set current flightID
+    useEffect(() => {
+        flightIdRef.current = flightId;
+    }, [flightId]);
+
+    // Get flights request
     useEffect(() => {
         async function getFlights() {
             try {
-                //throw new Error("fetching flights failed, please try again later")
                 const isoDateString = new Date().toISOString().replace(/\.\d*Z/, 'Z');
                 const flights = await request(`/api/Flights?relative_to=${isoDateString}&sync_all`);
+                const lastFlightId = flightIdRef.current;
+                const isSelectedFlightIdInFlights = lastFlightId && flights.some(flight => flight.flight_id === lastFlightId);
+
+                // Change flightID to null, if flight was deleted
+                if (!isSelectedFlightIdInFlights && lastFlightId !== null) {
+                    setFlightId(null);
+                }
+
+                // Execute the next request, a second after the last one is over
                 setFlights(flights);
                 setTimeout(getFlights, 1000);
             } catch (error) {
@@ -34,14 +49,14 @@ export default function App(props) {
                     addToast("fetching flights failed, please try again later", { appearance: 'error' })
                 }
             }
-
         }
-        getFlights();
-    }, []);
 
-    async function getFlightPlan(id) {
+        getFlights();
+    }, [addToast]);
+
+    // Flight plan by ID request
+    const getFlightPlan = useCallback(async function (id) {
         try {
-            //throw new Error("fetching flightPlan failed, please try again later")
             return await request(`/api/FlightPlan/${id}`);
         } catch (error) {
             if (error && error.message) {
@@ -50,10 +65,10 @@ export default function App(props) {
                 addToast("fetching flightPlan failed, please try again later", { appearance: 'error' })
             }
         }
-    }
+    }, [addToast]);
 
+    // If flightID exists, execute the get flight plan by ID request
     useEffect(() => {
-
         if (flightId) {
             getFlightPlan(flightId).then(flightPlan => {
                 setFlightPlan(flightPlan);
@@ -61,9 +76,10 @@ export default function App(props) {
         } else {
             setFlightPlan(null);
         }
-    }, [flightId]);
+    }, [flightId, getFlightPlan]);
 
     return (
+        // App design
         <div className="container-fluid">
             <div className="row">
                 <div className="col-md-8 p-0">
